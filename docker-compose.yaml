@@ -16,5 +16,11 @@ services:
     container_name: go-attend-easy-db
     networks:
       - go-attend-easy
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=go_attend_easy
 networks:
   go-attend-easy: {}
