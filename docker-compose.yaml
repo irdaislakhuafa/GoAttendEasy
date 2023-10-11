@@ -1,0 +1,20 @@
+version: '3'
+services:
+  app:
+    container_name: go-attend-easy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      - go-attend-easy
+  db:
+    image: postgres:15-alpine
+    container_name: go-attend-easy-db
+    networks:
+      - go-attend-easy
+networks:
+  go-attend-easy: {}
