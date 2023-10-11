@@ -1,0 +1,13 @@
+{
+	"App": {
+		"Name": "Go Attend Easy"
+	},
+	"DB": {
+		"Driver": "postgres",
+		"Username": "postgres",
+		"Password": "postgres",
+		"DatabaseName": "go_attend_easy",
+		"Host": "localhost",
+		"Port": 5432
+	}
+}
