@@ -10,13 +10,13 @@ import (
 
 func GetBaseSchema() []ent.Field {
 	fields := []ent.Field{
-		field.UUID("id", uuid.UUID{}).Unique().Default(uuid.New),
-		field.Time("created_at").Default(time.Now()),
+		field.String("id").StructTag("pk").Default(uuid.NewString()),
+		field.Time("created_at").Optional().Default(time.Now()),
 		field.String("created_by").NotEmpty(),
 		field.Time("updated_at").Optional(),
-		field.String("updated_by"),
+		field.String("updated_by").Optional(),
 		field.Time("deleted_at").Optional(),
-		field.String("deleted_by"),
+		field.String("deleted_by").Optional(),
 		field.Bool("is_deleted").Default(false),
 	}
 	return fields

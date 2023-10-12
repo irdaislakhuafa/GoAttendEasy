@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/predicate"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 )
@@ -82,8 +81,8 @@ func (rq *ReminderQuery) FirstX(ctx context.Context) *Reminder {
 
 // FirstID returns the first Reminder ID from the query.
 // Returns a *NotFoundError when no Reminder ID was found.
-func (rq *ReminderQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (rq *ReminderQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +94,7 @@ func (rq *ReminderQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *ReminderQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (rq *ReminderQuery) FirstIDX(ctx context.Context) string {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +132,8 @@ func (rq *ReminderQuery) OnlyX(ctx context.Context) *Reminder {
 // OnlyID is like Only, but returns the only Reminder ID in the query.
 // Returns a *NotSingularError when more than one Reminder ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *ReminderQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (rq *ReminderQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +149,7 @@ func (rq *ReminderQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *ReminderQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (rq *ReminderQuery) OnlyIDX(ctx context.Context) string {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +177,7 @@ func (rq *ReminderQuery) AllX(ctx context.Context) []*Reminder {
 }
 
 // IDs executes the query and returns a list of Reminder IDs.
-func (rq *ReminderQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+func (rq *ReminderQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
@@ -190,7 +189,7 @@ func (rq *ReminderQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *ReminderQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (rq *ReminderQuery) IDsX(ctx context.Context) []string {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -365,7 +364,7 @@ func (rq *ReminderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rq *ReminderQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewQuerySpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeString))
 	_spec.From = rq.sql
 	if unique := rq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

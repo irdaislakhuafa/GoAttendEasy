@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
 )
 
@@ -93,6 +92,14 @@ func (ac *AttendanceCreate) SetUpdatedBy(s string) *AttendanceCreate {
 	return ac
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ac *AttendanceCreate) SetNillableUpdatedBy(s *string) *AttendanceCreate {
+	if s != nil {
+		ac.SetUpdatedBy(*s)
+	}
+	return ac
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ac *AttendanceCreate) SetDeletedAt(t time.Time) *AttendanceCreate {
 	ac.mutation.SetDeletedAt(t)
@@ -113,6 +120,14 @@ func (ac *AttendanceCreate) SetDeletedBy(s string) *AttendanceCreate {
 	return ac
 }
 
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (ac *AttendanceCreate) SetNillableDeletedBy(s *string) *AttendanceCreate {
+	if s != nil {
+		ac.SetDeletedBy(*s)
+	}
+	return ac
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (ac *AttendanceCreate) SetIsDeleted(b bool) *AttendanceCreate {
 	ac.mutation.SetIsDeleted(b)
@@ -128,15 +143,15 @@ func (ac *AttendanceCreate) SetNillableIsDeleted(b *bool) *AttendanceCreate {
 }
 
 // SetID sets the "id" field.
-func (ac *AttendanceCreate) SetID(u uuid.UUID) *AttendanceCreate {
-	ac.mutation.SetID(u)
+func (ac *AttendanceCreate) SetID(s string) *AttendanceCreate {
+	ac.mutation.SetID(s)
 	return ac
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ac *AttendanceCreate) SetNillableID(u *uuid.UUID) *AttendanceCreate {
-	if u != nil {
-		ac.SetID(*u)
+func (ac *AttendanceCreate) SetNillableID(s *string) *AttendanceCreate {
+	if s != nil {
+		ac.SetID(*s)
 	}
 	return ac
 }
@@ -189,7 +204,7 @@ func (ac *AttendanceCreate) defaults() {
 		ac.mutation.SetIsDeleted(v)
 	}
 	if _, ok := ac.mutation.ID(); !ok {
-		v := attendance.DefaultID()
+		v := attendance.DefaultID
 		ac.mutation.SetID(v)
 	}
 }
@@ -213,9 +228,6 @@ func (ac *AttendanceCreate) check() error {
 	if _, ok := ac.mutation.IsPresent(); !ok {
 		return &ValidationError{Name: "is_present", err: errors.New(`generated: missing required field "Attendance.is_present"`)}
 	}
-	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Attendance.created_at"`)}
-	}
 	if _, ok := ac.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`generated: missing required field "Attendance.created_by"`)}
 	}
@@ -223,12 +235,6 @@ func (ac *AttendanceCreate) check() error {
 		if err := attendance.CreatedByValidator(v); err != nil {
 			return &ValidationError{Name: "created_by", err: fmt.Errorf(`generated: validator failed for field "Attendance.created_by": %w`, err)}
 		}
-	}
-	if _, ok := ac.mutation.UpdatedBy(); !ok {
-		return &ValidationError{Name: "updated_by", err: errors.New(`generated: missing required field "Attendance.updated_by"`)}
-	}
-	if _, ok := ac.mutation.DeletedBy(); !ok {
-		return &ValidationError{Name: "deleted_by", err: errors.New(`generated: missing required field "Attendance.deleted_by"`)}
 	}
 	if _, ok := ac.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "Attendance.is_deleted"`)}
@@ -248,10 +254,10 @@ func (ac *AttendanceCreate) sqlSave(ctx context.Context) (*Attendance, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Attendance.ID type: %T", _spec.ID.Value)
 		}
 	}
 	ac.mutation.id = &_node.ID
@@ -262,11 +268,11 @@ func (ac *AttendanceCreate) sqlSave(ctx context.Context) (*Attendance, error) {
 func (ac *AttendanceCreate) createSpec() (*Attendance, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Attendance{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(attendance.Table, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(attendance.Table, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeString))
 	)
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := ac.mutation.UserID(); ok {
 		_spec.SetField(attendance.FieldUserID, field.TypeString, value)

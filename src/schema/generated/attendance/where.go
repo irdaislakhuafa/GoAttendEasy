@@ -6,53 +6,62 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Attendance {
+func ID(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Attendance {
+func IDEQ(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Attendance {
+func IDNEQ(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Attendance {
+func IDIn(ids ...string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Attendance {
+func IDNotIn(ids ...string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Attendance {
+func IDGT(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Attendance {
+func IDGTE(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Attendance {
+func IDLT(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Attendance {
+func IDLTE(id string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Attendance {
+	return predicate.Attendance(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Attendance {
+	return predicate.Attendance(sql.FieldContainsFold(FieldID, id))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
@@ -305,6 +314,16 @@ func CreatedAtLTE(v time.Time) predicate.Attendance {
 	return predicate.Attendance(sql.FieldLTE(FieldCreatedAt, v))
 }
 
+// CreatedAtIsNil applies the IsNil predicate on the "created_at" field.
+func CreatedAtIsNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldIsNull(FieldCreatedAt))
+}
+
+// CreatedAtNotNil applies the NotNil predicate on the "created_at" field.
+func CreatedAtNotNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldNotNull(FieldCreatedAt))
+}
+
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
 func CreatedByEQ(v string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldEQ(FieldCreatedBy, v))
@@ -475,6 +494,16 @@ func UpdatedByHasSuffix(v string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldHasSuffix(FieldUpdatedBy, v))
 }
 
+// UpdatedByIsNil applies the IsNil predicate on the "updated_by" field.
+func UpdatedByIsNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldIsNull(FieldUpdatedBy))
+}
+
+// UpdatedByNotNil applies the NotNil predicate on the "updated_by" field.
+func UpdatedByNotNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldNotNull(FieldUpdatedBy))
+}
+
 // UpdatedByEqualFold applies the EqualFold predicate on the "updated_by" field.
 func UpdatedByEqualFold(v string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldEqualFold(FieldUpdatedBy, v))
@@ -588,6 +617,16 @@ func DeletedByHasPrefix(v string) predicate.Attendance {
 // DeletedByHasSuffix applies the HasSuffix predicate on the "deleted_by" field.
 func DeletedByHasSuffix(v string) predicate.Attendance {
 	return predicate.Attendance(sql.FieldHasSuffix(FieldDeletedBy, v))
+}
+
+// DeletedByIsNil applies the IsNil predicate on the "deleted_by" field.
+func DeletedByIsNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldIsNull(FieldDeletedBy))
+}
+
+// DeletedByNotNil applies the NotNil predicate on the "deleted_by" field.
+func DeletedByNotNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldNotNull(FieldDeletedBy))
 }
 
 // DeletedByEqualFold applies the EqualFold predicate on the "deleted_by" field.

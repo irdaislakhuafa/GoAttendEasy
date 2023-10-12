@@ -16,6 +16,7 @@ func (User) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("email").Unique().NotEmpty(),
 		field.String("password").NotEmpty(),
+		field.String("role_id").NotEmpty(),
 	}
 	fields = append(fields, GetBaseSchema()...)
 	return fields

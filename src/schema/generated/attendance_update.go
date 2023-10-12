@@ -74,6 +74,12 @@ func (au *AttendanceUpdate) SetNillableCreatedAt(t *time.Time) *AttendanceUpdate
 	return au
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (au *AttendanceUpdate) ClearCreatedAt() *AttendanceUpdate {
+	au.mutation.ClearCreatedAt()
+	return au
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (au *AttendanceUpdate) SetCreatedBy(s string) *AttendanceUpdate {
 	au.mutation.SetCreatedBy(s)
@@ -106,6 +112,20 @@ func (au *AttendanceUpdate) SetUpdatedBy(s string) *AttendanceUpdate {
 	return au
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableUpdatedBy(s *string) *AttendanceUpdate {
+	if s != nil {
+		au.SetUpdatedBy(*s)
+	}
+	return au
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (au *AttendanceUpdate) ClearUpdatedBy() *AttendanceUpdate {
+	au.mutation.ClearUpdatedBy()
+	return au
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (au *AttendanceUpdate) SetDeletedAt(t time.Time) *AttendanceUpdate {
 	au.mutation.SetDeletedAt(t)
@@ -129,6 +149,20 @@ func (au *AttendanceUpdate) ClearDeletedAt() *AttendanceUpdate {
 // SetDeletedBy sets the "deleted_by" field.
 func (au *AttendanceUpdate) SetDeletedBy(s string) *AttendanceUpdate {
 	au.mutation.SetDeletedBy(s)
+	return au
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableDeletedBy(s *string) *AttendanceUpdate {
+	if s != nil {
+		au.SetDeletedBy(*s)
+	}
+	return au
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (au *AttendanceUpdate) ClearDeletedBy() *AttendanceUpdate {
+	au.mutation.ClearDeletedBy()
 	return au
 }
 
@@ -197,7 +231,7 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeString))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -220,6 +254,9 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.CreatedAt(); ok {
 		_spec.SetField(attendance.FieldCreatedAt, field.TypeTime, value)
 	}
+	if au.mutation.CreatedAtCleared() {
+		_spec.ClearField(attendance.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := au.mutation.CreatedBy(); ok {
 		_spec.SetField(attendance.FieldCreatedBy, field.TypeString, value)
 	}
@@ -232,6 +269,9 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.UpdatedBy(); ok {
 		_spec.SetField(attendance.FieldUpdatedBy, field.TypeString, value)
 	}
+	if au.mutation.UpdatedByCleared() {
+		_spec.ClearField(attendance.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := au.mutation.DeletedAt(); ok {
 		_spec.SetField(attendance.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -240,6 +280,9 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.DeletedBy(); ok {
 		_spec.SetField(attendance.FieldDeletedBy, field.TypeString, value)
+	}
+	if au.mutation.DeletedByCleared() {
+		_spec.ClearField(attendance.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := au.mutation.IsDeleted(); ok {
 		_spec.SetField(attendance.FieldIsDeleted, field.TypeBool, value)
@@ -310,6 +353,12 @@ func (auo *AttendanceUpdateOne) SetNillableCreatedAt(t *time.Time) *AttendanceUp
 	return auo
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (auo *AttendanceUpdateOne) ClearCreatedAt() *AttendanceUpdateOne {
+	auo.mutation.ClearCreatedAt()
+	return auo
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (auo *AttendanceUpdateOne) SetCreatedBy(s string) *AttendanceUpdateOne {
 	auo.mutation.SetCreatedBy(s)
@@ -342,6 +391,20 @@ func (auo *AttendanceUpdateOne) SetUpdatedBy(s string) *AttendanceUpdateOne {
 	return auo
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableUpdatedBy(s *string) *AttendanceUpdateOne {
+	if s != nil {
+		auo.SetUpdatedBy(*s)
+	}
+	return auo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (auo *AttendanceUpdateOne) ClearUpdatedBy() *AttendanceUpdateOne {
+	auo.mutation.ClearUpdatedBy()
+	return auo
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (auo *AttendanceUpdateOne) SetDeletedAt(t time.Time) *AttendanceUpdateOne {
 	auo.mutation.SetDeletedAt(t)
@@ -365,6 +428,20 @@ func (auo *AttendanceUpdateOne) ClearDeletedAt() *AttendanceUpdateOne {
 // SetDeletedBy sets the "deleted_by" field.
 func (auo *AttendanceUpdateOne) SetDeletedBy(s string) *AttendanceUpdateOne {
 	auo.mutation.SetDeletedBy(s)
+	return auo
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableDeletedBy(s *string) *AttendanceUpdateOne {
+	if s != nil {
+		auo.SetDeletedBy(*s)
+	}
+	return auo
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (auo *AttendanceUpdateOne) ClearDeletedBy() *AttendanceUpdateOne {
+	auo.mutation.ClearDeletedBy()
 	return auo
 }
 
@@ -446,7 +523,7 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeString))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`generated: missing "Attendance.id" for update`)}
@@ -486,6 +563,9 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	if value, ok := auo.mutation.CreatedAt(); ok {
 		_spec.SetField(attendance.FieldCreatedAt, field.TypeTime, value)
 	}
+	if auo.mutation.CreatedAtCleared() {
+		_spec.ClearField(attendance.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := auo.mutation.CreatedBy(); ok {
 		_spec.SetField(attendance.FieldCreatedBy, field.TypeString, value)
 	}
@@ -498,6 +578,9 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	if value, ok := auo.mutation.UpdatedBy(); ok {
 		_spec.SetField(attendance.FieldUpdatedBy, field.TypeString, value)
 	}
+	if auo.mutation.UpdatedByCleared() {
+		_spec.ClearField(attendance.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := auo.mutation.DeletedAt(); ok {
 		_spec.SetField(attendance.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -506,6 +589,9 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	}
 	if value, ok := auo.mutation.DeletedBy(); ok {
 		_spec.SetField(attendance.FieldDeletedBy, field.TypeString, value)
+	}
+	if auo.mutation.DeletedByCleared() {
+		_spec.ClearField(attendance.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := auo.mutation.IsDeleted(); ok {
 		_spec.SetField(attendance.FieldIsDeleted, field.TypeBool, value)

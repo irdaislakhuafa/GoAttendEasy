@@ -9,7 +9,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 )
 
@@ -17,7 +16,7 @@ import (
 type Reminder struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty" pk`
 	// In holds the value of the "in" field.
 	In time.Time `json:"in,omitempty"`
 	// Out holds the value of the "out" field.
@@ -50,12 +49,10 @@ func (*Reminder) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case reminder.FieldDay:
 			values[i] = new(sql.NullInt64)
-		case reminder.FieldCreatedBy, reminder.FieldUpdatedBy, reminder.FieldDeletedBy:
+		case reminder.FieldID, reminder.FieldCreatedBy, reminder.FieldUpdatedBy, reminder.FieldDeletedBy:
 			values[i] = new(sql.NullString)
 		case reminder.FieldIn, reminder.FieldOut, reminder.FieldCreatedAt, reminder.FieldUpdatedAt, reminder.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case reminder.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -72,10 +69,10 @@ func (r *Reminder) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case reminder.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				r.ID = *value
+			} else if value.Valid {
+				r.ID = value.String
 			}
 		case reminder.FieldIn:
 			if value, ok := values[i].(*sql.NullTime); !ok {

@@ -5,13 +5,11 @@ package generated
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
-	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/userrole"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -43,7 +41,7 @@ func init() {
 	// attendanceDescID is the schema descriptor for id field.
 	attendanceDescID := attendanceFields[4].Descriptor()
 	// attendance.DefaultID holds the default value on creation for the id field.
-	attendance.DefaultID = attendanceDescID.Default.(func() uuid.UUID)
+	attendance.DefaultID = attendanceDescID.Default.(string)
 	reminderFields := schema.Reminder{}.Fields()
 	_ = reminderFields
 	// reminderDescDay is the schema descriptor for day field.
@@ -65,7 +63,7 @@ func init() {
 	// reminderDescID is the schema descriptor for id field.
 	reminderDescID := reminderFields[3].Descriptor()
 	// reminder.DefaultID holds the default value on creation for the id field.
-	reminder.DefaultID = reminderDescID.Default.(func() uuid.UUID)
+	reminder.DefaultID = reminderDescID.Default.(string)
 	roleFields := schema.Role{}.Fields()
 	_ = roleFields
 	// roleDescName is the schema descriptor for name field.
@@ -91,7 +89,7 @@ func init() {
 	// roleDescID is the schema descriptor for id field.
 	roleDescID := roleFields[2].Descriptor()
 	// role.DefaultID holds the default value on creation for the id field.
-	role.DefaultID = roleDescID.Default.(func() uuid.UUID)
+	role.DefaultID = roleDescID.Default.(string)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
@@ -106,46 +104,24 @@ func init() {
 	userDescPassword := userFields[2].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	// userDescRoleID is the schema descriptor for role_id field.
+	userDescRoleID := userFields[3].Descriptor()
+	// user.RoleIDValidator is a validator for the "role_id" field. It is called by the builders before save.
+	user.RoleIDValidator = userDescRoleID.Validators[0].(func(string) error)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[4].Descriptor()
+	userDescCreatedAt := userFields[5].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(time.Time)
 	// userDescCreatedBy is the schema descriptor for created_by field.
-	userDescCreatedBy := userFields[5].Descriptor()
+	userDescCreatedBy := userFields[6].Descriptor()
 	// user.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	user.CreatedByValidator = userDescCreatedBy.Validators[0].(func(string) error)
 	// userDescIsDeleted is the schema descriptor for is_deleted field.
-	userDescIsDeleted := userFields[10].Descriptor()
+	userDescIsDeleted := userFields[11].Descriptor()
 	// user.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	user.DefaultIsDeleted = userDescIsDeleted.Default.(bool)
 	// userDescID is the schema descriptor for id field.
-	userDescID := userFields[3].Descriptor()
+	userDescID := userFields[4].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
-	user.DefaultID = userDescID.Default.(func() uuid.UUID)
-	userroleFields := schema.UserRole{}.Fields()
-	_ = userroleFields
-	// userroleDescUserID is the schema descriptor for user_id field.
-	userroleDescUserID := userroleFields[0].Descriptor()
-	// userrole.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	userrole.UserIDValidator = userroleDescUserID.Validators[0].(func(string) error)
-	// userroleDescRoleID is the schema descriptor for role_id field.
-	userroleDescRoleID := userroleFields[1].Descriptor()
-	// userrole.RoleIDValidator is a validator for the "role_id" field. It is called by the builders before save.
-	userrole.RoleIDValidator = userroleDescRoleID.Validators[0].(func(string) error)
-	// userroleDescCreatedAt is the schema descriptor for created_at field.
-	userroleDescCreatedAt := userroleFields[3].Descriptor()
-	// userrole.DefaultCreatedAt holds the default value on creation for the created_at field.
-	userrole.DefaultCreatedAt = userroleDescCreatedAt.Default.(time.Time)
-	// userroleDescCreatedBy is the schema descriptor for created_by field.
-	userroleDescCreatedBy := userroleFields[4].Descriptor()
-	// userrole.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
-	userrole.CreatedByValidator = userroleDescCreatedBy.Validators[0].(func(string) error)
-	// userroleDescIsDeleted is the schema descriptor for is_deleted field.
-	userroleDescIsDeleted := userroleFields[9].Descriptor()
-	// userrole.DefaultIsDeleted holds the default value on creation for the is_deleted field.
-	userrole.DefaultIsDeleted = userroleDescIsDeleted.Default.(bool)
-	// userroleDescID is the schema descriptor for id field.
-	userroleDescID := userroleFields[2].Descriptor()
-	// userrole.DefaultID holds the default value on creation for the id field.
-	userrole.DefaultID = userroleDescID.Default.(func() uuid.UUID)
+	user.DefaultID = userDescID.Default.(string)
 }

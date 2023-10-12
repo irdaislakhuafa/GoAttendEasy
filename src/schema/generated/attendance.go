@@ -9,7 +9,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
 )
 
@@ -17,7 +16,7 @@ import (
 type Attendance struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty" pk`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
 	// In holds the value of the "in" field.
@@ -50,12 +49,10 @@ func (*Attendance) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case attendance.FieldIsPresent, attendance.FieldIsDeleted:
 			values[i] = new(sql.NullBool)
-		case attendance.FieldUserID, attendance.FieldCreatedBy, attendance.FieldUpdatedBy, attendance.FieldDeletedBy:
+		case attendance.FieldID, attendance.FieldUserID, attendance.FieldCreatedBy, attendance.FieldUpdatedBy, attendance.FieldDeletedBy:
 			values[i] = new(sql.NullString)
 		case attendance.FieldIn, attendance.FieldOut, attendance.FieldCreatedAt, attendance.FieldUpdatedAt, attendance.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case attendance.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -72,10 +69,10 @@ func (a *Attendance) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case attendance.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				a.ID = *value
+			} else if value.Valid {
+				a.ID = value.String
 			}
 		case attendance.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {

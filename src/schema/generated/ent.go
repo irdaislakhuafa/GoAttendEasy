@@ -16,7 +16,6 @@ import (
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
-	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/userrole"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -81,7 +80,6 @@ func checkColumn(table, column string) error {
 			reminder.Table:   reminder.ValidColumn,
 			role.Table:       role.ValidColumn,
 			user.Table:       user.ValidColumn,
-			userrole.Table:   userrole.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

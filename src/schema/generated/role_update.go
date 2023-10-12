@@ -68,6 +68,12 @@ func (ru *RoleUpdate) SetNillableCreatedAt(t *time.Time) *RoleUpdate {
 	return ru
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (ru *RoleUpdate) ClearCreatedAt() *RoleUpdate {
+	ru.mutation.ClearCreatedAt()
+	return ru
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (ru *RoleUpdate) SetCreatedBy(s string) *RoleUpdate {
 	ru.mutation.SetCreatedBy(s)
@@ -100,6 +106,20 @@ func (ru *RoleUpdate) SetUpdatedBy(s string) *RoleUpdate {
 	return ru
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ru *RoleUpdate) SetNillableUpdatedBy(s *string) *RoleUpdate {
+	if s != nil {
+		ru.SetUpdatedBy(*s)
+	}
+	return ru
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ru *RoleUpdate) ClearUpdatedBy() *RoleUpdate {
+	ru.mutation.ClearUpdatedBy()
+	return ru
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ru *RoleUpdate) SetDeletedAt(t time.Time) *RoleUpdate {
 	ru.mutation.SetDeletedAt(t)
@@ -123,6 +143,20 @@ func (ru *RoleUpdate) ClearDeletedAt() *RoleUpdate {
 // SetDeletedBy sets the "deleted_by" field.
 func (ru *RoleUpdate) SetDeletedBy(s string) *RoleUpdate {
 	ru.mutation.SetDeletedBy(s)
+	return ru
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (ru *RoleUpdate) SetNillableDeletedBy(s *string) *RoleUpdate {
+	if s != nil {
+		ru.SetDeletedBy(*s)
+	}
+	return ru
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (ru *RoleUpdate) ClearDeletedBy() *RoleUpdate {
+	ru.mutation.ClearDeletedBy()
 	return ru
 }
 
@@ -196,7 +230,7 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ru.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -216,6 +250,9 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
 	}
+	if ru.mutation.CreatedAtCleared() {
+		_spec.ClearField(role.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := ru.mutation.CreatedBy(); ok {
 		_spec.SetField(role.FieldCreatedBy, field.TypeString, value)
 	}
@@ -228,6 +265,9 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.UpdatedBy(); ok {
 		_spec.SetField(role.FieldUpdatedBy, field.TypeString, value)
 	}
+	if ru.mutation.UpdatedByCleared() {
+		_spec.ClearField(role.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := ru.mutation.DeletedAt(); ok {
 		_spec.SetField(role.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -236,6 +276,9 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.DeletedBy(); ok {
 		_spec.SetField(role.FieldDeletedBy, field.TypeString, value)
+	}
+	if ru.mutation.DeletedByCleared() {
+		_spec.ClearField(role.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := ru.mutation.IsDeleted(); ok {
 		_spec.SetField(role.FieldIsDeleted, field.TypeBool, value)
@@ -300,6 +343,12 @@ func (ruo *RoleUpdateOne) SetNillableCreatedAt(t *time.Time) *RoleUpdateOne {
 	return ruo
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (ruo *RoleUpdateOne) ClearCreatedAt() *RoleUpdateOne {
+	ruo.mutation.ClearCreatedAt()
+	return ruo
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (ruo *RoleUpdateOne) SetCreatedBy(s string) *RoleUpdateOne {
 	ruo.mutation.SetCreatedBy(s)
@@ -332,6 +381,20 @@ func (ruo *RoleUpdateOne) SetUpdatedBy(s string) *RoleUpdateOne {
 	return ruo
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ruo *RoleUpdateOne) SetNillableUpdatedBy(s *string) *RoleUpdateOne {
+	if s != nil {
+		ruo.SetUpdatedBy(*s)
+	}
+	return ruo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ruo *RoleUpdateOne) ClearUpdatedBy() *RoleUpdateOne {
+	ruo.mutation.ClearUpdatedBy()
+	return ruo
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ruo *RoleUpdateOne) SetDeletedAt(t time.Time) *RoleUpdateOne {
 	ruo.mutation.SetDeletedAt(t)
@@ -355,6 +418,20 @@ func (ruo *RoleUpdateOne) ClearDeletedAt() *RoleUpdateOne {
 // SetDeletedBy sets the "deleted_by" field.
 func (ruo *RoleUpdateOne) SetDeletedBy(s string) *RoleUpdateOne {
 	ruo.mutation.SetDeletedBy(s)
+	return ruo
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (ruo *RoleUpdateOne) SetNillableDeletedBy(s *string) *RoleUpdateOne {
+	if s != nil {
+		ruo.SetDeletedBy(*s)
+	}
+	return ruo
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (ruo *RoleUpdateOne) ClearDeletedBy() *RoleUpdateOne {
+	ruo.mutation.ClearDeletedBy()
 	return ruo
 }
 
@@ -441,7 +518,7 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	if err := ruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`generated: missing "Role.id" for update`)}
@@ -478,6 +555,9 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	if value, ok := ruo.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
 	}
+	if ruo.mutation.CreatedAtCleared() {
+		_spec.ClearField(role.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := ruo.mutation.CreatedBy(); ok {
 		_spec.SetField(role.FieldCreatedBy, field.TypeString, value)
 	}
@@ -490,6 +570,9 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	if value, ok := ruo.mutation.UpdatedBy(); ok {
 		_spec.SetField(role.FieldUpdatedBy, field.TypeString, value)
 	}
+	if ruo.mutation.UpdatedByCleared() {
+		_spec.ClearField(role.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := ruo.mutation.DeletedAt(); ok {
 		_spec.SetField(role.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -498,6 +581,9 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	}
 	if value, ok := ruo.mutation.DeletedBy(); ok {
 		_spec.SetField(role.FieldDeletedBy, field.TypeString, value)
+	}
+	if ruo.mutation.DeletedByCleared() {
+		_spec.ClearField(role.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := ruo.mutation.IsDeleted(); ok {
 		_spec.SetField(role.FieldIsDeleted, field.TypeBool, value)

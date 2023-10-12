@@ -6,53 +6,62 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Reminder {
+func ID(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Reminder {
+func IDEQ(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Reminder {
+func IDNEQ(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Reminder {
+func IDIn(ids ...string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Reminder {
+func IDNotIn(ids ...string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Reminder {
+func IDGT(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Reminder {
+func IDGTE(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Reminder {
+func IDLT(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Reminder {
+func IDLTE(id string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Reminder {
+	return predicate.Reminder(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Reminder {
+	return predicate.Reminder(sql.FieldContainsFold(FieldID, id))
 }
 
 // In applies equality check predicate on the "in" field. It's identical to InEQ.
@@ -265,6 +274,16 @@ func CreatedAtLTE(v time.Time) predicate.Reminder {
 	return predicate.Reminder(sql.FieldLTE(FieldCreatedAt, v))
 }
 
+// CreatedAtIsNil applies the IsNil predicate on the "created_at" field.
+func CreatedAtIsNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldIsNull(FieldCreatedAt))
+}
+
+// CreatedAtNotNil applies the NotNil predicate on the "created_at" field.
+func CreatedAtNotNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldNotNull(FieldCreatedAt))
+}
+
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
 func CreatedByEQ(v string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldEQ(FieldCreatedBy, v))
@@ -435,6 +454,16 @@ func UpdatedByHasSuffix(v string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldHasSuffix(FieldUpdatedBy, v))
 }
 
+// UpdatedByIsNil applies the IsNil predicate on the "updated_by" field.
+func UpdatedByIsNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldIsNull(FieldUpdatedBy))
+}
+
+// UpdatedByNotNil applies the NotNil predicate on the "updated_by" field.
+func UpdatedByNotNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldNotNull(FieldUpdatedBy))
+}
+
 // UpdatedByEqualFold applies the EqualFold predicate on the "updated_by" field.
 func UpdatedByEqualFold(v string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldEqualFold(FieldUpdatedBy, v))
@@ -548,6 +577,16 @@ func DeletedByHasPrefix(v string) predicate.Reminder {
 // DeletedByHasSuffix applies the HasSuffix predicate on the "deleted_by" field.
 func DeletedByHasSuffix(v string) predicate.Reminder {
 	return predicate.Reminder(sql.FieldHasSuffix(FieldDeletedBy, v))
+}
+
+// DeletedByIsNil applies the IsNil predicate on the "deleted_by" field.
+func DeletedByIsNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldIsNull(FieldDeletedBy))
+}
+
+// DeletedByNotNil applies the NotNil predicate on the "deleted_by" field.
+func DeletedByNotNil() predicate.Reminder {
+	return predicate.Reminder(sql.FieldNotNull(FieldDeletedBy))
 }
 
 // DeletedByEqualFold applies the EqualFold predicate on the "deleted_by" field.
