@@ -9,6 +9,7 @@ import (
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/response"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/middleware"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
 	"github.com/irdaislakhuafa/go-argon2/argon2"
 	"github.com/labstack/echo/v4"
 )
@@ -34,7 +35,20 @@ func NewUser(rest *Rest, ctx context.Context) UserInterface {
 func (u *restUser) GetList(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[[]*generated.User]{}
-		listUser, err := u.rest.client.User.Query().All(ctx)
+		body := new(struct {
+			IsDeleted bool `validate:"required"`
+		})
+		if err := c.Bind(body); err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		}
+
+		if err := c.Validate(body); err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		}
+
+		listUser, err := u.rest.client.User.Query().Where(user.IsDeleted(body.IsDeleted)).All(ctx)
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			c.Logger().Error(err)
