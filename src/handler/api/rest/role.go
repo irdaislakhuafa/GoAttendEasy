@@ -43,7 +43,7 @@ func (r *restRole) Create(ctx context.Context) func(c echo.Context) error {
 			Name        string `validate:"required"`
 			Description string `validate:"required"`
 		})
-		result := response.ResponseData[any]{}
+		result := response.ResponseData[*generated.Role]{}
 		if err := c.Bind(body); err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			return c.JSON(http.StatusBadRequest, result)
@@ -76,14 +76,14 @@ func (r *restRole) Create(ctx context.Context) func(c echo.Context) error {
 			return c.JSON(http.StatusInternalServerError, result)
 		}
 
-		result.Data = *role
+		result.Data = role
 		return c.JSON(http.StatusOK, result)
 	}
 }
 
 func (r *restRole) GetList(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		result := response.ResponseData[any]{}
+		result := response.ResponseData[[]*generated.Role]{}
 		body := new(struct {
 			IsDeleted bool `validate:"required"`
 		})
@@ -110,7 +110,7 @@ func (r *restRole) GetList(ctx context.Context) func(c echo.Context) error {
 
 func (r *restRole) Update(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		result := response.ResponseData[any]{}
+		result := response.ResponseData[*generated.Role]{}
 		body := new(struct {
 			ID          string `validate:"required"`
 			Name        string `validate:"required"`
@@ -160,7 +160,7 @@ func (r *restRole) Update(ctx context.Context) func(c echo.Context) error {
 			return c.JSON(http.StatusInternalServerError, result)
 		}
 
-		result.Data = *role
+		result.Data = role
 		return c.JSON(http.StatusOK, result)
 	}
 }
