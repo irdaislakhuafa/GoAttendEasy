@@ -1,6 +1,14 @@
 {
 	"App": {
-		"Name": "Go Attend Easy"
+		"Name": "Go Attend Easy",
+		"DefaultCreation": "system",
+		"JWT": {
+			"Secret": "xxxxxxxx",
+			"ExpiredInMinute": 10080
+		}
+	},
+	"Server": {
+		"Port": 8080
 	},
 	"DB": {
 		"Driver": "postgres",
@@ -8,6 +16,7 @@
 		"Password": "postgres",
 		"DatabaseName": "go_attend_easy",
 		"Host": "localhost",
-		"Port": 5432
+		"Port": 5432,
+		"SSL": false
 	}
 }

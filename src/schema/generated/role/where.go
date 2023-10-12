@@ -6,53 +6,62 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Role {
+func ID(id string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Role {
+func IDEQ(id string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Role {
+func IDNEQ(id string) predicate.Role {
 	return predicate.Role(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Role {
+func IDIn(ids ...string) predicate.Role {
 	return predicate.Role(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Role {
+func IDNotIn(ids ...string) predicate.Role {
 	return predicate.Role(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Role {
+func IDGT(id string) predicate.Role {
 	return predicate.Role(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Role {
+func IDGTE(id string) predicate.Role {
 	return predicate.Role(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Role {
+func IDLT(id string) predicate.Role {
 	return predicate.Role(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Role {
+func IDLTE(id string) predicate.Role {
 	return predicate.Role(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Role {
+	return predicate.Role(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Role {
+	return predicate.Role(sql.FieldContainsFold(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -280,6 +289,16 @@ func CreatedAtLTE(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldLTE(FieldCreatedAt, v))
 }
 
+// CreatedAtIsNil applies the IsNil predicate on the "created_at" field.
+func CreatedAtIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldCreatedAt))
+}
+
+// CreatedAtNotNil applies the NotNil predicate on the "created_at" field.
+func CreatedAtNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldCreatedAt))
+}
+
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
 func CreatedByEQ(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedBy, v))
@@ -450,6 +469,16 @@ func UpdatedByHasSuffix(v string) predicate.Role {
 	return predicate.Role(sql.FieldHasSuffix(FieldUpdatedBy, v))
 }
 
+// UpdatedByIsNil applies the IsNil predicate on the "updated_by" field.
+func UpdatedByIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldUpdatedBy))
+}
+
+// UpdatedByNotNil applies the NotNil predicate on the "updated_by" field.
+func UpdatedByNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldUpdatedBy))
+}
+
 // UpdatedByEqualFold applies the EqualFold predicate on the "updated_by" field.
 func UpdatedByEqualFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldEqualFold(FieldUpdatedBy, v))
@@ -563,6 +592,16 @@ func DeletedByHasPrefix(v string) predicate.Role {
 // DeletedByHasSuffix applies the HasSuffix predicate on the "deleted_by" field.
 func DeletedByHasSuffix(v string) predicate.Role {
 	return predicate.Role(sql.FieldHasSuffix(FieldDeletedBy, v))
+}
+
+// DeletedByIsNil applies the IsNil predicate on the "deleted_by" field.
+func DeletedByIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldDeletedBy))
+}
+
+// DeletedByNotNil applies the NotNil predicate on the "deleted_by" field.
+func DeletedByNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldDeletedBy))
 }
 
 // DeletedByEqualFold applies the EqualFold predicate on the "deleted_by" field.

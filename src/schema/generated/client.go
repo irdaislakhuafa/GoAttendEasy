@@ -9,7 +9,6 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/migrate"
 
 	"entgo.io/ent"
@@ -19,7 +18,6 @@ import (
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
-	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/userrole"
 )
 
 // Client is the client that holds all ent builders.
@@ -35,8 +33,6 @@ type Client struct {
 	Role *RoleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
-	// UserRole is the client for interacting with the UserRole builders.
-	UserRole *UserRoleClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -54,7 +50,6 @@ func (c *Client) init() {
 	c.Reminder = NewReminderClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.User = NewUserClient(c.config)
-	c.UserRole = NewUserRoleClient(c.config)
 }
 
 type (
@@ -144,7 +139,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Reminder:   NewReminderClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
-		UserRole:   NewUserRoleClient(cfg),
 	}, nil
 }
 
@@ -168,7 +162,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Reminder:   NewReminderClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
-		UserRole:   NewUserRoleClient(cfg),
 	}, nil
 }
 
@@ -201,7 +194,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Reminder.Use(hooks...)
 	c.Role.Use(hooks...)
 	c.User.Use(hooks...)
-	c.UserRole.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
@@ -211,7 +203,6 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Reminder.Intercept(interceptors...)
 	c.Role.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
-	c.UserRole.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -225,8 +216,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Role.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
-	case *UserRoleMutation:
-		return c.UserRole.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("generated: unknown mutation type %T", m)
 	}
@@ -293,7 +282,7 @@ func (c *AttendanceClient) UpdateOne(a *Attendance) *AttendanceUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AttendanceClient) UpdateOneID(id uuid.UUID) *AttendanceUpdateOne {
+func (c *AttendanceClient) UpdateOneID(id string) *AttendanceUpdateOne {
 	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendanceID(id))
 	return &AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -310,7 +299,7 @@ func (c *AttendanceClient) DeleteOne(a *Attendance) *AttendanceDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AttendanceClient) DeleteOneID(id uuid.UUID) *AttendanceDeleteOne {
+func (c *AttendanceClient) DeleteOneID(id string) *AttendanceDeleteOne {
 	builder := c.Delete().Where(attendance.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -327,12 +316,12 @@ func (c *AttendanceClient) Query() *AttendanceQuery {
 }
 
 // Get returns a Attendance entity by its id.
-func (c *AttendanceClient) Get(ctx context.Context, id uuid.UUID) (*Attendance, error) {
+func (c *AttendanceClient) Get(ctx context.Context, id string) (*Attendance, error) {
 	return c.Query().Where(attendance.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AttendanceClient) GetX(ctx context.Context, id uuid.UUID) *Attendance {
+func (c *AttendanceClient) GetX(ctx context.Context, id string) *Attendance {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -426,7 +415,7 @@ func (c *ReminderClient) UpdateOne(r *Reminder) *ReminderUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ReminderClient) UpdateOneID(id uuid.UUID) *ReminderUpdateOne {
+func (c *ReminderClient) UpdateOneID(id string) *ReminderUpdateOne {
 	mutation := newReminderMutation(c.config, OpUpdateOne, withReminderID(id))
 	return &ReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -443,7 +432,7 @@ func (c *ReminderClient) DeleteOne(r *Reminder) *ReminderDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ReminderClient) DeleteOneID(id uuid.UUID) *ReminderDeleteOne {
+func (c *ReminderClient) DeleteOneID(id string) *ReminderDeleteOne {
 	builder := c.Delete().Where(reminder.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -460,12 +449,12 @@ func (c *ReminderClient) Query() *ReminderQuery {
 }
 
 // Get returns a Reminder entity by its id.
-func (c *ReminderClient) Get(ctx context.Context, id uuid.UUID) (*Reminder, error) {
+func (c *ReminderClient) Get(ctx context.Context, id string) (*Reminder, error) {
 	return c.Query().Where(reminder.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ReminderClient) GetX(ctx context.Context, id uuid.UUID) *Reminder {
+func (c *ReminderClient) GetX(ctx context.Context, id string) *Reminder {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -559,7 +548,7 @@ func (c *RoleClient) UpdateOne(r *Role) *RoleUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RoleClient) UpdateOneID(id uuid.UUID) *RoleUpdateOne {
+func (c *RoleClient) UpdateOneID(id string) *RoleUpdateOne {
 	mutation := newRoleMutation(c.config, OpUpdateOne, withRoleID(id))
 	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -576,7 +565,7 @@ func (c *RoleClient) DeleteOne(r *Role) *RoleDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleClient) DeleteOneID(id uuid.UUID) *RoleDeleteOne {
+func (c *RoleClient) DeleteOneID(id string) *RoleDeleteOne {
 	builder := c.Delete().Where(role.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -593,12 +582,12 @@ func (c *RoleClient) Query() *RoleQuery {
 }
 
 // Get returns a Role entity by its id.
-func (c *RoleClient) Get(ctx context.Context, id uuid.UUID) (*Role, error) {
+func (c *RoleClient) Get(ctx context.Context, id string) (*Role, error) {
 	return c.Query().Where(role.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RoleClient) GetX(ctx context.Context, id uuid.UUID) *Role {
+func (c *RoleClient) GetX(ctx context.Context, id string) *Role {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -692,7 +681,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id uuid.UUID) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id string) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -709,7 +698,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id string) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -726,12 +715,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id uuid.UUID) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id string) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
+func (c *UserClient) GetX(ctx context.Context, id string) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -764,145 +753,12 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 	}
 }
 
-// UserRoleClient is a client for the UserRole schema.
-type UserRoleClient struct {
-	config
-}
-
-// NewUserRoleClient returns a client for the UserRole from the given config.
-func NewUserRoleClient(c config) *UserRoleClient {
-	return &UserRoleClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `userrole.Hooks(f(g(h())))`.
-func (c *UserRoleClient) Use(hooks ...Hook) {
-	c.hooks.UserRole = append(c.hooks.UserRole, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `userrole.Intercept(f(g(h())))`.
-func (c *UserRoleClient) Intercept(interceptors ...Interceptor) {
-	c.inters.UserRole = append(c.inters.UserRole, interceptors...)
-}
-
-// Create returns a builder for creating a UserRole entity.
-func (c *UserRoleClient) Create() *UserRoleCreate {
-	mutation := newUserRoleMutation(c.config, OpCreate)
-	return &UserRoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of UserRole entities.
-func (c *UserRoleClient) CreateBulk(builders ...*UserRoleCreate) *UserRoleCreateBulk {
-	return &UserRoleCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *UserRoleClient) MapCreateBulk(slice any, setFunc func(*UserRoleCreate, int)) *UserRoleCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &UserRoleCreateBulk{err: fmt.Errorf("calling to UserRoleClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*UserRoleCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &UserRoleCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for UserRole.
-func (c *UserRoleClient) Update() *UserRoleUpdate {
-	mutation := newUserRoleMutation(c.config, OpUpdate)
-	return &UserRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *UserRoleClient) UpdateOne(ur *UserRole) *UserRoleUpdateOne {
-	mutation := newUserRoleMutation(c.config, OpUpdateOne, withUserRole(ur))
-	return &UserRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *UserRoleClient) UpdateOneID(id uuid.UUID) *UserRoleUpdateOne {
-	mutation := newUserRoleMutation(c.config, OpUpdateOne, withUserRoleID(id))
-	return &UserRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for UserRole.
-func (c *UserRoleClient) Delete() *UserRoleDelete {
-	mutation := newUserRoleMutation(c.config, OpDelete)
-	return &UserRoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *UserRoleClient) DeleteOne(ur *UserRole) *UserRoleDeleteOne {
-	return c.DeleteOneID(ur.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserRoleClient) DeleteOneID(id uuid.UUID) *UserRoleDeleteOne {
-	builder := c.Delete().Where(userrole.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &UserRoleDeleteOne{builder}
-}
-
-// Query returns a query builder for UserRole.
-func (c *UserRoleClient) Query() *UserRoleQuery {
-	return &UserRoleQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeUserRole},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a UserRole entity by its id.
-func (c *UserRoleClient) Get(ctx context.Context, id uuid.UUID) (*UserRole, error) {
-	return c.Query().Where(userrole.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *UserRoleClient) GetX(ctx context.Context, id uuid.UUID) *UserRole {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *UserRoleClient) Hooks() []Hook {
-	return c.hooks.UserRole
-}
-
-// Interceptors returns the client interceptors.
-func (c *UserRoleClient) Interceptors() []Interceptor {
-	return c.inters.UserRole
-}
-
-func (c *UserRoleClient) mutate(ctx context.Context, m *UserRoleMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&UserRoleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&UserRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&UserRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&UserRoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("generated: unknown UserRole mutation op: %q", m.Op())
-	}
-}
-
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Attendance, Reminder, Role, User, UserRole []ent.Hook
+		Attendance, Reminder, Role, User []ent.Hook
 	}
 	inters struct {
-		Attendance, Reminder, Role, User, UserRole []ent.Interceptor
+		Attendance, Reminder, Role, User []ent.Interceptor
 	}
 )

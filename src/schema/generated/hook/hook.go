@@ -57,18 +57,6 @@ func (f UserFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.V
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.UserMutation", m)
 }
 
-// The UserRoleFunc type is an adapter to allow the use of ordinary
-// function as UserRole mutator.
-type UserRoleFunc func(context.Context, *generated.UserRoleMutation) (generated.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f UserRoleFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
-	if mv, ok := m.(*generated.UserRoleMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.UserRoleMutation", m)
-}
-
 // Condition is a hook condition function.
 type Condition func(context.Context, generated.Mutation) bool
 

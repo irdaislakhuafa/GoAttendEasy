@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 )
 
@@ -81,6 +80,14 @@ func (rc *RoleCreate) SetUpdatedBy(s string) *RoleCreate {
 	return rc
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (rc *RoleCreate) SetNillableUpdatedBy(s *string) *RoleCreate {
+	if s != nil {
+		rc.SetUpdatedBy(*s)
+	}
+	return rc
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (rc *RoleCreate) SetDeletedAt(t time.Time) *RoleCreate {
 	rc.mutation.SetDeletedAt(t)
@@ -101,6 +108,14 @@ func (rc *RoleCreate) SetDeletedBy(s string) *RoleCreate {
 	return rc
 }
 
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (rc *RoleCreate) SetNillableDeletedBy(s *string) *RoleCreate {
+	if s != nil {
+		rc.SetDeletedBy(*s)
+	}
+	return rc
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (rc *RoleCreate) SetIsDeleted(b bool) *RoleCreate {
 	rc.mutation.SetIsDeleted(b)
@@ -116,15 +131,15 @@ func (rc *RoleCreate) SetNillableIsDeleted(b *bool) *RoleCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RoleCreate) SetID(u uuid.UUID) *RoleCreate {
-	rc.mutation.SetID(u)
+func (rc *RoleCreate) SetID(s string) *RoleCreate {
+	rc.mutation.SetID(s)
 	return rc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *RoleCreate) SetNillableID(u *uuid.UUID) *RoleCreate {
-	if u != nil {
-		rc.SetID(*u)
+func (rc *RoleCreate) SetNillableID(s *string) *RoleCreate {
+	if s != nil {
+		rc.SetID(*s)
 	}
 	return rc
 }
@@ -173,7 +188,7 @@ func (rc *RoleCreate) defaults() {
 		rc.mutation.SetIsDeleted(v)
 	}
 	if _, ok := rc.mutation.ID(); !ok {
-		v := role.DefaultID()
+		v := role.DefaultID
 		rc.mutation.SetID(v)
 	}
 }
@@ -193,9 +208,6 @@ func (rc *RoleCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`generated: validator failed for field "Role.description": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Role.created_at"`)}
-	}
 	if _, ok := rc.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`generated: missing required field "Role.created_by"`)}
 	}
@@ -203,12 +215,6 @@ func (rc *RoleCreate) check() error {
 		if err := role.CreatedByValidator(v); err != nil {
 			return &ValidationError{Name: "created_by", err: fmt.Errorf(`generated: validator failed for field "Role.created_by": %w`, err)}
 		}
-	}
-	if _, ok := rc.mutation.UpdatedBy(); !ok {
-		return &ValidationError{Name: "updated_by", err: errors.New(`generated: missing required field "Role.updated_by"`)}
-	}
-	if _, ok := rc.mutation.DeletedBy(); !ok {
-		return &ValidationError{Name: "deleted_by", err: errors.New(`generated: missing required field "Role.deleted_by"`)}
 	}
 	if _, ok := rc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "Role.is_deleted"`)}
@@ -228,10 +234,10 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Role.ID type: %T", _spec.ID.Value)
 		}
 	}
 	rc.mutation.id = &_node.ID
@@ -242,11 +248,11 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Role{config: rc.config}
-		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	)
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := rc.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)

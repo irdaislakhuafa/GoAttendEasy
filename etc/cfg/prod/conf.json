@@ -1,0 +1,22 @@
+{
+	"App": {
+		"Name": "Go Attend Easy",
+		"DefaultCreation": "system",
+		"JWT": {
+			"Secret": "xxxxxxxx",
+			"ExpiredInMinute": 10080
+		}
+	},
+	"Server": {
+		"Port": 8080
+	},
+	"DB": {
+		"Driver": "postgres",
+		"Username": "uljax8t65upkn70tcp8d",
+		"Password": "IWeUnzYt1mqzQvUowHgReaYkSHvD4I",
+		"DatabaseName": "b8xjwznrk0inhabkcnzz",
+		"Host": "b8xjwznrk0inhabkcnzz-postgresql.services.clever-cloud.com",
+		"Port": 5432,
+		"SSL": false
+	}
+}

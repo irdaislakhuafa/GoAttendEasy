@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 )
 
@@ -79,6 +78,14 @@ func (rc *ReminderCreate) SetUpdatedBy(s string) *ReminderCreate {
 	return rc
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (rc *ReminderCreate) SetNillableUpdatedBy(s *string) *ReminderCreate {
+	if s != nil {
+		rc.SetUpdatedBy(*s)
+	}
+	return rc
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (rc *ReminderCreate) SetDeletedAt(t time.Time) *ReminderCreate {
 	rc.mutation.SetDeletedAt(t)
@@ -99,6 +106,14 @@ func (rc *ReminderCreate) SetDeletedBy(s string) *ReminderCreate {
 	return rc
 }
 
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (rc *ReminderCreate) SetNillableDeletedBy(s *string) *ReminderCreate {
+	if s != nil {
+		rc.SetDeletedBy(*s)
+	}
+	return rc
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (rc *ReminderCreate) SetIsDeleted(b bool) *ReminderCreate {
 	rc.mutation.SetIsDeleted(b)
@@ -114,15 +129,15 @@ func (rc *ReminderCreate) SetNillableIsDeleted(b *bool) *ReminderCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *ReminderCreate) SetID(u uuid.UUID) *ReminderCreate {
-	rc.mutation.SetID(u)
+func (rc *ReminderCreate) SetID(s string) *ReminderCreate {
+	rc.mutation.SetID(s)
 	return rc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *ReminderCreate) SetNillableID(u *uuid.UUID) *ReminderCreate {
-	if u != nil {
-		rc.SetID(*u)
+func (rc *ReminderCreate) SetNillableID(s *string) *ReminderCreate {
+	if s != nil {
+		rc.SetID(*s)
 	}
 	return rc
 }
@@ -171,7 +186,7 @@ func (rc *ReminderCreate) defaults() {
 		rc.mutation.SetIsDeleted(v)
 	}
 	if _, ok := rc.mutation.ID(); !ok {
-		v := reminder.DefaultID()
+		v := reminder.DefaultID
 		rc.mutation.SetID(v)
 	}
 }
@@ -192,9 +207,6 @@ func (rc *ReminderCreate) check() error {
 			return &ValidationError{Name: "day", err: fmt.Errorf(`generated: validator failed for field "Reminder.day": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Reminder.created_at"`)}
-	}
 	if _, ok := rc.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`generated: missing required field "Reminder.created_by"`)}
 	}
@@ -202,12 +214,6 @@ func (rc *ReminderCreate) check() error {
 		if err := reminder.CreatedByValidator(v); err != nil {
 			return &ValidationError{Name: "created_by", err: fmt.Errorf(`generated: validator failed for field "Reminder.created_by": %w`, err)}
 		}
-	}
-	if _, ok := rc.mutation.UpdatedBy(); !ok {
-		return &ValidationError{Name: "updated_by", err: errors.New(`generated: missing required field "Reminder.updated_by"`)}
-	}
-	if _, ok := rc.mutation.DeletedBy(); !ok {
-		return &ValidationError{Name: "deleted_by", err: errors.New(`generated: missing required field "Reminder.deleted_by"`)}
 	}
 	if _, ok := rc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`generated: missing required field "Reminder.is_deleted"`)}
@@ -227,10 +233,10 @@ func (rc *ReminderCreate) sqlSave(ctx context.Context) (*Reminder, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Reminder.ID type: %T", _spec.ID.Value)
 		}
 	}
 	rc.mutation.id = &_node.ID
@@ -241,11 +247,11 @@ func (rc *ReminderCreate) sqlSave(ctx context.Context) (*Reminder, error) {
 func (rc *ReminderCreate) createSpec() (*Reminder, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Reminder{config: rc.config}
-		_spec = sqlgraph.NewCreateSpec(reminder.Table, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(reminder.Table, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeString))
 	)
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := rc.mutation.In(); ok {
 		_spec.SetField(reminder.FieldIn, field.TypeTime, value)

@@ -21,4 +21,10 @@ const (
 	// json marshal/unmarshal
 	CodeJSONUnmarshalError
 	CodeJSONMarshalError
+
+	// jwt
+	CodeJWTInvalidClaimsType
+	CodeJWTParseWithClaimsError
+	CodeJWTInvalidMethod
+	CodeJWTSignedStringError
 )

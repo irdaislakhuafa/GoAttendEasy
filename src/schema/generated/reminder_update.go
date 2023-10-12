@@ -67,6 +67,12 @@ func (ru *ReminderUpdate) SetNillableCreatedAt(t *time.Time) *ReminderUpdate {
 	return ru
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (ru *ReminderUpdate) ClearCreatedAt() *ReminderUpdate {
+	ru.mutation.ClearCreatedAt()
+	return ru
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (ru *ReminderUpdate) SetCreatedBy(s string) *ReminderUpdate {
 	ru.mutation.SetCreatedBy(s)
@@ -99,6 +105,20 @@ func (ru *ReminderUpdate) SetUpdatedBy(s string) *ReminderUpdate {
 	return ru
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ru *ReminderUpdate) SetNillableUpdatedBy(s *string) *ReminderUpdate {
+	if s != nil {
+		ru.SetUpdatedBy(*s)
+	}
+	return ru
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ru *ReminderUpdate) ClearUpdatedBy() *ReminderUpdate {
+	ru.mutation.ClearUpdatedBy()
+	return ru
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ru *ReminderUpdate) SetDeletedAt(t time.Time) *ReminderUpdate {
 	ru.mutation.SetDeletedAt(t)
@@ -122,6 +142,20 @@ func (ru *ReminderUpdate) ClearDeletedAt() *ReminderUpdate {
 // SetDeletedBy sets the "deleted_by" field.
 func (ru *ReminderUpdate) SetDeletedBy(s string) *ReminderUpdate {
 	ru.mutation.SetDeletedBy(s)
+	return ru
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (ru *ReminderUpdate) SetNillableDeletedBy(s *string) *ReminderUpdate {
+	if s != nil {
+		ru.SetDeletedBy(*s)
+	}
+	return ru
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (ru *ReminderUpdate) ClearDeletedBy() *ReminderUpdate {
+	ru.mutation.ClearDeletedBy()
 	return ru
 }
 
@@ -190,7 +224,7 @@ func (ru *ReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ru.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -213,6 +247,9 @@ func (ru *ReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.SetField(reminder.FieldCreatedAt, field.TypeTime, value)
 	}
+	if ru.mutation.CreatedAtCleared() {
+		_spec.ClearField(reminder.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := ru.mutation.CreatedBy(); ok {
 		_spec.SetField(reminder.FieldCreatedBy, field.TypeString, value)
 	}
@@ -225,6 +262,9 @@ func (ru *ReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.UpdatedBy(); ok {
 		_spec.SetField(reminder.FieldUpdatedBy, field.TypeString, value)
 	}
+	if ru.mutation.UpdatedByCleared() {
+		_spec.ClearField(reminder.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := ru.mutation.DeletedAt(); ok {
 		_spec.SetField(reminder.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -233,6 +273,9 @@ func (ru *ReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.DeletedBy(); ok {
 		_spec.SetField(reminder.FieldDeletedBy, field.TypeString, value)
+	}
+	if ru.mutation.DeletedByCleared() {
+		_spec.ClearField(reminder.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := ru.mutation.IsDeleted(); ok {
 		_spec.SetField(reminder.FieldIsDeleted, field.TypeBool, value)
@@ -296,6 +339,12 @@ func (ruo *ReminderUpdateOne) SetNillableCreatedAt(t *time.Time) *ReminderUpdate
 	return ruo
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (ruo *ReminderUpdateOne) ClearCreatedAt() *ReminderUpdateOne {
+	ruo.mutation.ClearCreatedAt()
+	return ruo
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (ruo *ReminderUpdateOne) SetCreatedBy(s string) *ReminderUpdateOne {
 	ruo.mutation.SetCreatedBy(s)
@@ -328,6 +377,20 @@ func (ruo *ReminderUpdateOne) SetUpdatedBy(s string) *ReminderUpdateOne {
 	return ruo
 }
 
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ruo *ReminderUpdateOne) SetNillableUpdatedBy(s *string) *ReminderUpdateOne {
+	if s != nil {
+		ruo.SetUpdatedBy(*s)
+	}
+	return ruo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ruo *ReminderUpdateOne) ClearUpdatedBy() *ReminderUpdateOne {
+	ruo.mutation.ClearUpdatedBy()
+	return ruo
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ruo *ReminderUpdateOne) SetDeletedAt(t time.Time) *ReminderUpdateOne {
 	ruo.mutation.SetDeletedAt(t)
@@ -351,6 +414,20 @@ func (ruo *ReminderUpdateOne) ClearDeletedAt() *ReminderUpdateOne {
 // SetDeletedBy sets the "deleted_by" field.
 func (ruo *ReminderUpdateOne) SetDeletedBy(s string) *ReminderUpdateOne {
 	ruo.mutation.SetDeletedBy(s)
+	return ruo
+}
+
+// SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
+func (ruo *ReminderUpdateOne) SetNillableDeletedBy(s *string) *ReminderUpdateOne {
+	if s != nil {
+		ruo.SetDeletedBy(*s)
+	}
+	return ruo
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (ruo *ReminderUpdateOne) ClearDeletedBy() *ReminderUpdateOne {
+	ruo.mutation.ClearDeletedBy()
 	return ruo
 }
 
@@ -432,7 +509,7 @@ func (ruo *ReminderUpdateOne) sqlSave(ctx context.Context) (_node *Reminder, err
 	if err := ruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(reminder.Table, reminder.Columns, sqlgraph.NewFieldSpec(reminder.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`generated: missing "Reminder.id" for update`)}
@@ -472,6 +549,9 @@ func (ruo *ReminderUpdateOne) sqlSave(ctx context.Context) (_node *Reminder, err
 	if value, ok := ruo.mutation.CreatedAt(); ok {
 		_spec.SetField(reminder.FieldCreatedAt, field.TypeTime, value)
 	}
+	if ruo.mutation.CreatedAtCleared() {
+		_spec.ClearField(reminder.FieldCreatedAt, field.TypeTime)
+	}
 	if value, ok := ruo.mutation.CreatedBy(); ok {
 		_spec.SetField(reminder.FieldCreatedBy, field.TypeString, value)
 	}
@@ -484,6 +564,9 @@ func (ruo *ReminderUpdateOne) sqlSave(ctx context.Context) (_node *Reminder, err
 	if value, ok := ruo.mutation.UpdatedBy(); ok {
 		_spec.SetField(reminder.FieldUpdatedBy, field.TypeString, value)
 	}
+	if ruo.mutation.UpdatedByCleared() {
+		_spec.ClearField(reminder.FieldUpdatedBy, field.TypeString)
+	}
 	if value, ok := ruo.mutation.DeletedAt(); ok {
 		_spec.SetField(reminder.FieldDeletedAt, field.TypeTime, value)
 	}
@@ -492,6 +575,9 @@ func (ruo *ReminderUpdateOne) sqlSave(ctx context.Context) (_node *Reminder, err
 	}
 	if value, ok := ruo.mutation.DeletedBy(); ok {
 		_spec.SetField(reminder.FieldDeletedBy, field.TypeString, value)
+	}
+	if ruo.mutation.DeletedByCleared() {
+		_spec.ClearField(reminder.FieldDeletedBy, field.TypeString)
 	}
 	if value, ok := ruo.mutation.IsDeleted(); ok {
 		_spec.SetField(reminder.FieldIsDeleted, field.TypeBool, value)
