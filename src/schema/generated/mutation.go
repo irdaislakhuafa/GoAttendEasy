@@ -267,9 +267,22 @@ func (m *AttendanceMutation) OldOut(ctx context.Context) (v time.Time, err error
 	return oldValue.Out, nil
 }
 
+// ClearOut clears the value of the "out" field.
+func (m *AttendanceMutation) ClearOut() {
+	m.out = nil
+	m.clearedFields[attendance.FieldOut] = struct{}{}
+}
+
+// OutCleared returns if the "out" field was cleared in this mutation.
+func (m *AttendanceMutation) OutCleared() bool {
+	_, ok := m.clearedFields[attendance.FieldOut]
+	return ok
+}
+
 // ResetOut resets all changes to the "out" field.
 func (m *AttendanceMutation) ResetOut() {
 	m.out = nil
+	delete(m.clearedFields, attendance.FieldOut)
 }
 
 // SetIsPresent sets the "is_present" field.
@@ -870,6 +883,9 @@ func (m *AttendanceMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *AttendanceMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(attendance.FieldOut) {
+		fields = append(fields, attendance.FieldOut)
+	}
 	if m.FieldCleared(attendance.FieldCreatedAt) {
 		fields = append(fields, attendance.FieldCreatedAt)
 	}
@@ -899,6 +915,9 @@ func (m *AttendanceMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *AttendanceMutation) ClearField(name string) error {
 	switch name {
+	case attendance.FieldOut:
+		m.ClearOut()
+		return nil
 	case attendance.FieldCreatedAt:
 		m.ClearCreatedAt()
 		return nil

@@ -16,7 +16,7 @@ import (
 type Role struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty" pk`
+	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.

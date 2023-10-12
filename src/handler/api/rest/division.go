@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/response"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/middleware"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/division"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/customvalidator"
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,11 +32,11 @@ func NewDivision(rest *Rest, ctx context.Context) DivisionInterface {
 		rest: rest,
 	}
 
-	// TODO: use jwt middleware
-	rest.echo.GET("/api/divisions", division.GetList(ctx))
-	rest.echo.POST("/api/divisions", division.Create(ctx))
-	rest.echo.PUT("/api/divisions", division.Update(ctx))
-	rest.echo.DELETE("/api/divisions", division.Delete(ctx))
+	rest.echo.GET("/api/divisions", division.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{}))
+	rest.echo.GET("/api/divisions/:id", division.Get(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{}))
+	rest.echo.POST("/api/divisions", division.Create(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
+	rest.echo.PUT("/api/divisions", division.Update(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
+	rest.echo.DELETE("/api/divisions", division.Delete(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 
 	return division
 }
@@ -51,7 +54,7 @@ func (d *restDivision) Create(ctx context.Context) func(c echo.Context) error {
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 
@@ -64,6 +67,7 @@ func (d *restDivision) Create(ctx context.Context) func(c echo.Context) error {
 		defer tx.Rollback()
 
 		division, err := tx.Division.Create().
+			SetID(uuid.NewString()).
 			SetName(body.Name).
 			SetDescription(body.Description).
 			SetCreatedAt(time.Now()).
@@ -90,14 +94,9 @@ func (d *restDivision) GetList(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[[]*generated.Division]{}
 		body := new(struct {
-			IsDeleted bool `validate:"required"`
+			IsDeleted bool
 		})
 		if err := c.Bind(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
-			return c.JSON(http.StatusBadRequest, result)
-		}
-
-		if err := c.Validate(body); err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			return c.JSON(http.StatusBadRequest, result)
 		}
@@ -119,20 +118,9 @@ func (d *restDivision) GetList(ctx context.Context) func(c echo.Context) error {
 func (d *restDivision) Get(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[*generated.Division]{}
-		body := new(struct {
-			ID string `validate:"required"`
-		})
-		if err := c.Bind(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
-			return c.JSON(http.StatusBadRequest, result)
-		}
+		id := c.Param("id")
 
-		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
-			return c.JSON(http.StatusBadRequest, result)
-		}
-
-		division, err := d.rest.client.Division.Get(ctx, body.ID)
+		division, err := d.rest.client.Division.Get(ctx, id)
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			c.Logger().Error(err)
@@ -158,7 +146,7 @@ func (d *restDivision) Update(ctx context.Context) func(c echo.Context) error {
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 
@@ -206,7 +194,7 @@ func (d *restDivision) Delete(ctx context.Context) func(c echo.Context) error {
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 

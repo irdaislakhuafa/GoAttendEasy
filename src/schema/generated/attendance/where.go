@@ -264,6 +264,16 @@ func OutLTE(v time.Time) predicate.Attendance {
 	return predicate.Attendance(sql.FieldLTE(FieldOut, v))
 }
 
+// OutIsNil applies the IsNil predicate on the "out" field.
+func OutIsNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldIsNull(FieldOut))
+}
+
+// OutNotNil applies the NotNil predicate on the "out" field.
+func OutNotNil() predicate.Attendance {
+	return predicate.Attendance(sql.FieldNotNull(FieldOut))
+}
+
 // IsPresentEQ applies the EQ predicate on the "is_present" field.
 func IsPresentEQ(v bool) predicate.Attendance {
 	return predicate.Attendance(sql.FieldEQ(FieldIsPresent, v))

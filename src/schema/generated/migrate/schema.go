@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "user_id", Type: field.TypeString},
 		{Name: "in", Type: field.TypeTime},
-		{Name: "out", Type: field.TypeTime},
+		{Name: "out", Type: field.TypeTime, Nullable: true},
 		{Name: "is_present", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_by", Type: field.TypeString},

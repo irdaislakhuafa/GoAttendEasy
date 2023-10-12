@@ -27,4 +27,5 @@ func Run(client *generated.Client, cfg *config.AppConfig, echo *echo.Echo, ctx c
 	NewEmployee(&rest, ctx)
 	NewDivision(&rest, ctx)
 	NewAttendance(&rest, ctx)
+	NewReminder(&rest, ctx)
 }

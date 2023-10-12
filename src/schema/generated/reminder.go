@@ -16,7 +16,7 @@ import (
 type Reminder struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty" pk`
+	ID string `json:"id,omitempty"`
 	// In holds the value of the "in" field.
 	In time.Time `json:"in,omitempty"`
 	// Out holds the value of the "out" field.
