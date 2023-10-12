@@ -2,6 +2,11 @@ stages:
   - test
   - deploy
 
+checkout:
+  script:
+    - git clone https://gitlab.com/irdaislakhuafa/GoAttendEasy.git
+    - cd GoAttendEasy
+
 test:
   stage: test
   image: golang:latest
