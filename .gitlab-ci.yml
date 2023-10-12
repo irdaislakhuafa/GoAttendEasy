@@ -3,11 +3,6 @@ stages:
   - test
   - deploy
 
-checkout:
-  script:
-    - git clone https://gitlab.com/irdaislakhuafa/GoAttendEasy.git
-    - cd GoAttendEasy
-
 test:
   stage: test
   image: golang:latest
@@ -15,7 +10,7 @@ test:
     - go test -v ./.. 
   only:
     - master
-c
+
 deploy:
   stage: deploy
   image: flyio/flyctl:latest
