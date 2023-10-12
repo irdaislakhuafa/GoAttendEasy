@@ -25,4 +25,6 @@ func Run(client *generated.Client, cfg *config.AppConfig, echo *echo.Echo, ctx c
 	NewRole(&rest, ctx)
 	NewUser(&rest, ctx)
 	NewEmployee(&rest, ctx)
+	NewDivision(&rest, ctx)
+	NewAttendance(&rest, ctx)
 }
