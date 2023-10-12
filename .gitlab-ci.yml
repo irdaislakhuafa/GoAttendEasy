@@ -1,3 +1,4 @@
+# TODO: fix this
 stages:
   - test
   - deploy
@@ -14,7 +15,7 @@ test:
     - go test -v ./.. 
   only:
     - master
-
+c
 deploy:
   stage: deploy
   image: flyio/flyctl:latest

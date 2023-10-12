@@ -14,6 +14,10 @@ type Tx struct {
 	config
 	// Attendance is the client for interacting with the Attendance builders.
 	Attendance *AttendanceClient
+	// Division is the client for interacting with the Division builders.
+	Division *DivisionClient
+	// Employee is the client for interacting with the Employee builders.
+	Employee *EmployeeClient
 	// Reminder is the client for interacting with the Reminder builders.
 	Reminder *ReminderClient
 	// Role is the client for interacting with the Role builders.
@@ -152,6 +156,8 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Attendance = NewAttendanceClient(tx.config)
+	tx.Division = NewDivisionClient(tx.config)
+	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Reminder = NewReminderClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.User = NewUserClient(tx.config)

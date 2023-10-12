@@ -21,6 +21,30 @@ func (f AttendanceFunc) Mutate(ctx context.Context, m generated.Mutation) (gener
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.AttendanceMutation", m)
 }
 
+// The DivisionFunc type is an adapter to allow the use of ordinary
+// function as Division mutator.
+type DivisionFunc func(context.Context, *generated.DivisionMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DivisionFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.DivisionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.DivisionMutation", m)
+}
+
+// The EmployeeFunc type is an adapter to allow the use of ordinary
+// function as Employee mutator.
+type EmployeeFunc func(context.Context, *generated.EmployeeMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EmployeeFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.EmployeeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.EmployeeMutation", m)
+}
+
 // The ReminderFunc type is an adapter to allow the use of ordinary
 // function as Reminder mutator.
 type ReminderFunc func(context.Context, *generated.ReminderMutation) (generated.Value, error)

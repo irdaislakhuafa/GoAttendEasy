@@ -63,6 +63,7 @@ func JWT(cfg *config.AppConfig, opts JWTMiddlewareOption) func(next echo.Handler
 			}
 
 			c.Set("claims", claims)
+			c.Set("user_id", claims.UserID)
 			return next(c)
 		}
 	}

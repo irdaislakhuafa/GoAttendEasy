@@ -15,6 +15,8 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/division"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/employee"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
@@ -27,6 +29,10 @@ type Client struct {
 	Schema *migrate.Schema
 	// Attendance is the client for interacting with the Attendance builders.
 	Attendance *AttendanceClient
+	// Division is the client for interacting with the Division builders.
+	Division *DivisionClient
+	// Employee is the client for interacting with the Employee builders.
+	Employee *EmployeeClient
 	// Reminder is the client for interacting with the Reminder builders.
 	Reminder *ReminderClient
 	// Role is the client for interacting with the Role builders.
@@ -47,6 +53,8 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Attendance = NewAttendanceClient(c.config)
+	c.Division = NewDivisionClient(c.config)
+	c.Employee = NewEmployeeClient(c.config)
 	c.Reminder = NewReminderClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -136,6 +144,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:        ctx,
 		config:     cfg,
 		Attendance: NewAttendanceClient(cfg),
+		Division:   NewDivisionClient(cfg),
+		Employee:   NewEmployeeClient(cfg),
 		Reminder:   NewReminderClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
@@ -159,6 +169,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:        ctx,
 		config:     cfg,
 		Attendance: NewAttendanceClient(cfg),
+		Division:   NewDivisionClient(cfg),
+		Employee:   NewEmployeeClient(cfg),
 		Reminder:   NewReminderClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
@@ -190,19 +202,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Attendance.Use(hooks...)
-	c.Reminder.Use(hooks...)
-	c.Role.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Attendance, c.Division, c.Employee, c.Reminder, c.Role, c.User,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Attendance.Intercept(interceptors...)
-	c.Reminder.Intercept(interceptors...)
-	c.Role.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Attendance, c.Division, c.Employee, c.Reminder, c.Role, c.User,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -210,6 +224,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AttendanceMutation:
 		return c.Attendance.mutate(ctx, m)
+	case *DivisionMutation:
+		return c.Division.mutate(ctx, m)
+	case *EmployeeMutation:
+		return c.Employee.mutate(ctx, m)
 	case *ReminderMutation:
 		return c.Reminder.mutate(ctx, m)
 	case *RoleMutation:
@@ -351,6 +369,272 @@ func (c *AttendanceClient) mutate(ctx context.Context, m *AttendanceMutation) (V
 		return (&AttendanceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("generated: unknown Attendance mutation op: %q", m.Op())
+	}
+}
+
+// DivisionClient is a client for the Division schema.
+type DivisionClient struct {
+	config
+}
+
+// NewDivisionClient returns a client for the Division from the given config.
+func NewDivisionClient(c config) *DivisionClient {
+	return &DivisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `division.Hooks(f(g(h())))`.
+func (c *DivisionClient) Use(hooks ...Hook) {
+	c.hooks.Division = append(c.hooks.Division, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `division.Intercept(f(g(h())))`.
+func (c *DivisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Division = append(c.inters.Division, interceptors...)
+}
+
+// Create returns a builder for creating a Division entity.
+func (c *DivisionClient) Create() *DivisionCreate {
+	mutation := newDivisionMutation(c.config, OpCreate)
+	return &DivisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Division entities.
+func (c *DivisionClient) CreateBulk(builders ...*DivisionCreate) *DivisionCreateBulk {
+	return &DivisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DivisionClient) MapCreateBulk(slice any, setFunc func(*DivisionCreate, int)) *DivisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DivisionCreateBulk{err: fmt.Errorf("calling to DivisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DivisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DivisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Division.
+func (c *DivisionClient) Update() *DivisionUpdate {
+	mutation := newDivisionMutation(c.config, OpUpdate)
+	return &DivisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DivisionClient) UpdateOne(d *Division) *DivisionUpdateOne {
+	mutation := newDivisionMutation(c.config, OpUpdateOne, withDivision(d))
+	return &DivisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DivisionClient) UpdateOneID(id string) *DivisionUpdateOne {
+	mutation := newDivisionMutation(c.config, OpUpdateOne, withDivisionID(id))
+	return &DivisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Division.
+func (c *DivisionClient) Delete() *DivisionDelete {
+	mutation := newDivisionMutation(c.config, OpDelete)
+	return &DivisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DivisionClient) DeleteOne(d *Division) *DivisionDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DivisionClient) DeleteOneID(id string) *DivisionDeleteOne {
+	builder := c.Delete().Where(division.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DivisionDeleteOne{builder}
+}
+
+// Query returns a query builder for Division.
+func (c *DivisionClient) Query() *DivisionQuery {
+	return &DivisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDivision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Division entity by its id.
+func (c *DivisionClient) Get(ctx context.Context, id string) (*Division, error) {
+	return c.Query().Where(division.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DivisionClient) GetX(ctx context.Context, id string) *Division {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *DivisionClient) Hooks() []Hook {
+	return c.hooks.Division
+}
+
+// Interceptors returns the client interceptors.
+func (c *DivisionClient) Interceptors() []Interceptor {
+	return c.inters.Division
+}
+
+func (c *DivisionClient) mutate(ctx context.Context, m *DivisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DivisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DivisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DivisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DivisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown Division mutation op: %q", m.Op())
+	}
+}
+
+// EmployeeClient is a client for the Employee schema.
+type EmployeeClient struct {
+	config
+}
+
+// NewEmployeeClient returns a client for the Employee from the given config.
+func NewEmployeeClient(c config) *EmployeeClient {
+	return &EmployeeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `employee.Hooks(f(g(h())))`.
+func (c *EmployeeClient) Use(hooks ...Hook) {
+	c.hooks.Employee = append(c.hooks.Employee, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `employee.Intercept(f(g(h())))`.
+func (c *EmployeeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Employee = append(c.inters.Employee, interceptors...)
+}
+
+// Create returns a builder for creating a Employee entity.
+func (c *EmployeeClient) Create() *EmployeeCreate {
+	mutation := newEmployeeMutation(c.config, OpCreate)
+	return &EmployeeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Employee entities.
+func (c *EmployeeClient) CreateBulk(builders ...*EmployeeCreate) *EmployeeCreateBulk {
+	return &EmployeeCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EmployeeClient) MapCreateBulk(slice any, setFunc func(*EmployeeCreate, int)) *EmployeeCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EmployeeCreateBulk{err: fmt.Errorf("calling to EmployeeClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EmployeeCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EmployeeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Employee.
+func (c *EmployeeClient) Update() *EmployeeUpdate {
+	mutation := newEmployeeMutation(c.config, OpUpdate)
+	return &EmployeeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmployeeClient) UpdateOne(e *Employee) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(e))
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmployeeClient) UpdateOneID(id string) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployeeID(id))
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Employee.
+func (c *EmployeeClient) Delete() *EmployeeDelete {
+	mutation := newEmployeeMutation(c.config, OpDelete)
+	return &EmployeeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EmployeeClient) DeleteOne(e *Employee) *EmployeeDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EmployeeClient) DeleteOneID(id string) *EmployeeDeleteOne {
+	builder := c.Delete().Where(employee.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmployeeDeleteOne{builder}
+}
+
+// Query returns a query builder for Employee.
+func (c *EmployeeClient) Query() *EmployeeQuery {
+	return &EmployeeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEmployee},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Employee entity by its id.
+func (c *EmployeeClient) Get(ctx context.Context, id string) (*Employee, error) {
+	return c.Query().Where(employee.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmployeeClient) GetX(ctx context.Context, id string) *Employee {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EmployeeClient) Hooks() []Hook {
+	return c.hooks.Employee
+}
+
+// Interceptors returns the client interceptors.
+func (c *EmployeeClient) Interceptors() []Interceptor {
+	return c.inters.Employee
+}
+
+func (c *EmployeeClient) mutate(ctx context.Context, m *EmployeeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EmployeeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EmployeeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EmployeeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown Employee mutation op: %q", m.Op())
 	}
 }
 
@@ -756,9 +1040,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Attendance, Reminder, Role, User []ent.Hook
+		Attendance, Division, Employee, Reminder, Role, User []ent.Hook
 	}
 	inters struct {
-		Attendance, Reminder, Role, User []ent.Interceptor
+		Attendance, Division, Employee, Reminder, Role, User []ent.Interceptor
 	}
 )
