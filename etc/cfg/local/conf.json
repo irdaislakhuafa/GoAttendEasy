@@ -18,5 +18,16 @@
 		"Host": "localhost",
 		"Port": 5432,
 		"SSL": false
+	},
+	"SMTP": {
+		"Host": "sandbox.smtp.mailtrap.io",
+		"Username": "aaead9b02042be",
+		"Password": "ae70029e982dc2",
+		"Port": 2525,
+		"Information": {
+			"Senders": [
+				"irdhaislakhuafa@gmail.com"
+			]
+		}
 	}
 }
