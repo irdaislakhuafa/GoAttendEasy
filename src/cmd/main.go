@@ -3,14 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/go-playground/validator/v10"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/rest"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/scheduller"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/web"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/config"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/connection"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/customvalidator"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/flags"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/smtp"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -48,6 +52,17 @@ func main() {
 		panic(err)
 	}
 
+	// initialize smtp
+	smtp := smtp.InitGoMail(cfg.SMTP)
+
+	// initialize go cron
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		panic(err)
+	}
+
+	cron := gocron.NewScheduler(loc)
+
 	// initilize echo
 	e := echo.New()
 
@@ -61,6 +76,10 @@ func main() {
 	// run rest api
 	rest.Run(client, &cfg, e, ctx)
 
+	// start scheduller
+	scheduller.InitScheduller(client, smtp, cron, &cfg, ctx)
+
 	// start echo http server
 	e.Start(fmt.Sprintf(":%d", cfg.Server.Port))
+
 }

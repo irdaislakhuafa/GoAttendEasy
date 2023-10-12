@@ -4,6 +4,7 @@ type AppConfig struct {
 	App    Application
 	Server Server
 	DB     Database
+	SMTP   SMTP
 }
 
 type Application struct {
@@ -29,4 +30,14 @@ type Database struct {
 type JWT struct {
 	Secret          string
 	ExpiredInMinute int64
+}
+
+type SMTP struct {
+	Username    string
+	Password    string
+	Host        string
+	Port        int64
+	Information struct {
+		Senders []string
+	}
 }
