@@ -43,6 +43,7 @@ func NewReminder(scheduller *Scheduller, ctx context.Context) ReminderInterface 
 }
 
 func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
+	// will read config from reminders for scheduller today
 	r.scheduller.cron.Every(1).Day().At("00:00:00").Do(func() {
 		log.Println("set notification for clock in and out from reminder configuration")
 		now := time.Now()
