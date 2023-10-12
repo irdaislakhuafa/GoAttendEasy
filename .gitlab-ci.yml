@@ -1,0 +1,20 @@
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  image: golang:latest
+  script:
+    - go test -v ./.. 
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  image: flyio/flyctl:latest
+  only:
+    - master
+  script:
+    - flyctl auth login -t "$FLY_TOKEN"
+    - flyctl deploy --now --app "go-attend-easy"
