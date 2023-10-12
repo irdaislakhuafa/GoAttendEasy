@@ -7,6 +7,8 @@ import (
 
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/division"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/employee"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/reminder"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
@@ -42,6 +44,58 @@ func init() {
 	attendanceDescID := attendanceFields[4].Descriptor()
 	// attendance.DefaultID holds the default value on creation for the id field.
 	attendance.DefaultID = attendanceDescID.Default.(string)
+	divisionFields := schema.Division{}.Fields()
+	_ = divisionFields
+	// divisionDescName is the schema descriptor for name field.
+	divisionDescName := divisionFields[0].Descriptor()
+	// division.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	division.NameValidator = divisionDescName.Validators[0].(func(string) error)
+	// divisionDescDescription is the schema descriptor for description field.
+	divisionDescDescription := divisionFields[1].Descriptor()
+	// division.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	division.DescriptionValidator = divisionDescDescription.Validators[0].(func(string) error)
+	// divisionDescCreatedAt is the schema descriptor for created_at field.
+	divisionDescCreatedAt := divisionFields[3].Descriptor()
+	// division.DefaultCreatedAt holds the default value on creation for the created_at field.
+	division.DefaultCreatedAt = divisionDescCreatedAt.Default.(time.Time)
+	// divisionDescCreatedBy is the schema descriptor for created_by field.
+	divisionDescCreatedBy := divisionFields[4].Descriptor()
+	// division.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	division.CreatedByValidator = divisionDescCreatedBy.Validators[0].(func(string) error)
+	// divisionDescIsDeleted is the schema descriptor for is_deleted field.
+	divisionDescIsDeleted := divisionFields[9].Descriptor()
+	// division.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	division.DefaultIsDeleted = divisionDescIsDeleted.Default.(bool)
+	// divisionDescID is the schema descriptor for id field.
+	divisionDescID := divisionFields[2].Descriptor()
+	// division.DefaultID holds the default value on creation for the id field.
+	division.DefaultID = divisionDescID.Default.(string)
+	employeeFields := schema.Employee{}.Fields()
+	_ = employeeFields
+	// employeeDescUserID is the schema descriptor for user_id field.
+	employeeDescUserID := employeeFields[0].Descriptor()
+	// employee.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	employee.UserIDValidator = employeeDescUserID.Validators[0].(func(string) error)
+	// employeeDescDivisionID is the schema descriptor for division_id field.
+	employeeDescDivisionID := employeeFields[1].Descriptor()
+	// employee.DivisionIDValidator is a validator for the "division_id" field. It is called by the builders before save.
+	employee.DivisionIDValidator = employeeDescDivisionID.Validators[0].(func(string) error)
+	// employeeDescCreatedAt is the schema descriptor for created_at field.
+	employeeDescCreatedAt := employeeFields[3].Descriptor()
+	// employee.DefaultCreatedAt holds the default value on creation for the created_at field.
+	employee.DefaultCreatedAt = employeeDescCreatedAt.Default.(time.Time)
+	// employeeDescCreatedBy is the schema descriptor for created_by field.
+	employeeDescCreatedBy := employeeFields[4].Descriptor()
+	// employee.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	employee.CreatedByValidator = employeeDescCreatedBy.Validators[0].(func(string) error)
+	// employeeDescIsDeleted is the schema descriptor for is_deleted field.
+	employeeDescIsDeleted := employeeFields[9].Descriptor()
+	// employee.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	employee.DefaultIsDeleted = employeeDescIsDeleted.Default.(bool)
+	// employeeDescID is the schema descriptor for id field.
+	employeeDescID := employeeFields[2].Descriptor()
+	// employee.DefaultID holds the default value on creation for the id field.
+	employee.DefaultID = employeeDescID.Default.(string)
 	reminderFields := schema.Reminder{}.Fields()
 	_ = reminderFields
 	// reminderDescDay is the schema descriptor for day field.

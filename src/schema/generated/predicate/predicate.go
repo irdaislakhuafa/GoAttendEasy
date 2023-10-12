@@ -9,6 +9,12 @@ import (
 // Attendance is the predicate function for attendance builders.
 type Attendance func(*sql.Selector)
 
+// Division is the predicate function for division builders.
+type Division func(*sql.Selector)
+
+// Employee is the predicate function for employee builders.
+type Employee func(*sql.Selector)
+
 // Reminder is the predicate function for reminder builders.
 type Reminder func(*sql.Selector)
 
