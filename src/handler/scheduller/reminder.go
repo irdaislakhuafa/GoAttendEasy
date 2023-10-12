@@ -72,7 +72,7 @@ func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
 
 		// clock in reminder
 		if !reminder.In.IsZero() {
-			scheduller.Every(1).Day().At(reminder.In.Format("15:04:05")).Do(func() {
+			scheduller.Every(1).Day().At(reminder.In.Add(-(time.Minute * 30)).Format("15:04:05")).Do(func() {
 				listMsg := []*mail.Message{}
 				for _, u := range listUser {
 					msg := mail.NewMessage(func(m *mail.Message) {
@@ -96,7 +96,7 @@ func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
 
 		// clock out reminder
 		if !reminder.Out.IsZero() {
-			scheduller.Every(1).Day().At(reminder.Out.Format("15:04:05")).Do(func() {
+			scheduller.Every(1).Day().At(reminder.Out.Add(-(time.Minute * 30)).Format("15:04:05")).Do(func() {
 				listMsg := []*mail.Message{}
 				for _, u := range listUser {
 					msg := mail.NewMessage(func(m *mail.Message) {
