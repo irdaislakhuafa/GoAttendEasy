@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/entity"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/request"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/response"
@@ -82,6 +83,7 @@ func (a *restAuth) Register(ctx context.Context) func(c echo.Context) error {
 
 		// create user
 		user, err := tx.User.Create().
+			SetID(uuid.NewString()).
 			SetName(body.Name).
 			SetEmail(body.Email).
 			SetPassword(hashedPassword).

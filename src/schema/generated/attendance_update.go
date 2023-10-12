@@ -46,6 +46,20 @@ func (au *AttendanceUpdate) SetOut(t time.Time) *AttendanceUpdate {
 	return au
 }
 
+// SetNillableOut sets the "out" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableOut(t *time.Time) *AttendanceUpdate {
+	if t != nil {
+		au.SetOut(*t)
+	}
+	return au
+}
+
+// ClearOut clears the value of the "out" field.
+func (au *AttendanceUpdate) ClearOut() *AttendanceUpdate {
+	au.mutation.ClearOut()
+	return au
+}
+
 // SetIsPresent sets the "is_present" field.
 func (au *AttendanceUpdate) SetIsPresent(b bool) *AttendanceUpdate {
 	au.mutation.SetIsPresent(b)
@@ -248,6 +262,9 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Out(); ok {
 		_spec.SetField(attendance.FieldOut, field.TypeTime, value)
 	}
+	if au.mutation.OutCleared() {
+		_spec.ClearField(attendance.FieldOut, field.TypeTime)
+	}
 	if value, ok := au.mutation.IsPresent(); ok {
 		_spec.SetField(attendance.FieldIsPresent, field.TypeBool, value)
 	}
@@ -322,6 +339,20 @@ func (auo *AttendanceUpdateOne) SetIn(t time.Time) *AttendanceUpdateOne {
 // SetOut sets the "out" field.
 func (auo *AttendanceUpdateOne) SetOut(t time.Time) *AttendanceUpdateOne {
 	auo.mutation.SetOut(t)
+	return auo
+}
+
+// SetNillableOut sets the "out" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableOut(t *time.Time) *AttendanceUpdateOne {
+	if t != nil {
+		auo.SetOut(*t)
+	}
+	return auo
+}
+
+// ClearOut clears the value of the "out" field.
+func (auo *AttendanceUpdateOne) ClearOut() *AttendanceUpdateOne {
+	auo.mutation.ClearOut()
 	return auo
 }
 
@@ -556,6 +587,9 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	}
 	if value, ok := auo.mutation.Out(); ok {
 		_spec.SetField(attendance.FieldOut, field.TypeTime, value)
+	}
+	if auo.mutation.OutCleared() {
+		_spec.ClearField(attendance.FieldOut, field.TypeTime)
 	}
 	if value, ok := auo.mutation.IsPresent(); ok {
 		_spec.SetField(attendance.FieldIsPresent, field.TypeBool, value)

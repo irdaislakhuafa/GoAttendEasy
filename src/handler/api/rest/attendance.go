@@ -5,20 +5,26 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/entity"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/response"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/middleware"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/attendance"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/predicate"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/customvalidator"
 	"github.com/labstack/echo/v4"
 )
 
 type AttendanceInterface interface {
-	Create(ctx context.Context) func(c echo.Context) error
+	In(ctx context.Context) func(c echo.Context) error
 	GetList(ctx context.Context) func(c echo.Context) error
 	Get(ctx context.Context) func(c echo.Context) error
-	Update(ctx context.Context) func(c echo.Context) error
+	Out(ctx context.Context) func(c echo.Context) error
 	Delete(ctx context.Context) func(c echo.Context) error
 }
 
@@ -32,15 +38,16 @@ func NewAttendance(rest *Rest, ctx context.Context) AttendanceInterface {
 	}
 
 	// TODO: use jwt middleware
-	rest.echo.POST("/api/attendances", attendance.Create(ctx))
-	rest.echo.GET("/api/attendances", attendance.GetList(ctx))
-	rest.echo.PUT("/api/attendances", attendance.Update(ctx))
-	rest.echo.DELETE("/api/attendances", attendance.Delete(ctx))
+	rest.echo.POST("/api/attendances/id", attendance.In(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
+	rest.echo.GET("/api/attendances", attendance.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{}}))
+	rest.echo.GET("/api/attendances/:id", attendance.Get(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
+	rest.echo.PUT("/api/attendances/out", attendance.Out(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
+	rest.echo.DELETE("/api/attendances", attendance.Delete(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 
 	return attendance
 }
 
-func (a *restAttendance) Create(ctx context.Context) func(c echo.Context) error {
+func (a *restAttendance) In(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[*generated.Attendance]{}
 		body := new(struct {
@@ -54,7 +61,7 @@ func (a *restAttendance) Create(ctx context.Context) func(c echo.Context) error 
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 
@@ -74,9 +81,22 @@ func (a *restAttendance) Create(ctx context.Context) func(c echo.Context) error 
 		}
 		defer tx.Rollback()
 
-		user, err := tx.User.Query().
-			Where(user.ID(body.UserID)).
-			First(ctx)
+		now := time.Now()
+		conditions := []predicate.Attendance{
+			attendance.CreatedAtLTE(now),
+			attendance.CreatedAtGTE(time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)),
+			attendance.UserID(body.UserID),
+		}
+		isExist, err := tx.Attendance.Query().Where(conditions...).Exist(ctx)
+		if err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		} else if isExist {
+			result.Error = append(result.Error, map[string]string{"message": "You have sent the attendance list today!"})
+			return c.JSON(http.StatusBadRequest, result)
+		}
+
+		user, err := tx.User.Query().Where(user.ID(body.UserID)).Select(user.FieldIsDeleted).First(ctx)
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			return c.JSON(http.StatusBadRequest, result)
@@ -88,7 +108,9 @@ func (a *restAttendance) Create(ctx context.Context) func(c echo.Context) error 
 		}
 
 		attendance, err := tx.Attendance.Create().
+			SetID(uuid.NewString()).
 			SetIn(in).
+			SetUserID(user.ID).
 			SetIsPresent(body.IsPresent).
 			SetCreatedAt(time.Now()).
 			SetCreatedBy(c.Get("user_id").(string)).
@@ -114,7 +136,7 @@ func (a *restAttendance) GetList(ctx context.Context) func(c echo.Context) error
 	return func(c echo.Context) error {
 		result := response.ResponseData[[]*generated.Attendance]{}
 		body := new(struct {
-			IsDeleted bool `validate:"required"`
+			IsDeleted bool
 		})
 		if err := c.Bind(body); err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
@@ -122,13 +144,25 @@ func (a *restAttendance) GetList(ctx context.Context) func(c echo.Context) error
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
+		now := time.Now()
+		conditions := []predicate.Attendance{
+			attendance.IsDeleted(body.IsDeleted),
+		}
 
-		listAttendance, err := a.rest.client.Attendance.Query().
-			Where(attendance.IsDeleted(body.IsDeleted)).
-			All(ctx)
+		if c, isOk := c.Get("claims").(*entity.Claims); isOk {
+			if strings.EqualFold(c.RoleName, "employee") {
+				conditions = append(conditions,
+					attendance.CreatedAtLTE(now),
+					attendance.CreatedAtGTE(time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)),
+					attendance.UserID(c.UserID),
+				)
+			}
+		}
+
+		listAttendance, err := a.rest.client.Attendance.Query().Where(conditions...).All(ctx)
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			return c.JSON(http.StatusBadRequest, result)
@@ -142,20 +176,9 @@ func (a *restAttendance) GetList(ctx context.Context) func(c echo.Context) error
 func (a *restAttendance) Get(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[*generated.Attendance]{}
-		body := new(struct {
-			ID string `validate:"required"`
-		})
-		if err := c.Bind(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
-			return c.JSON(http.StatusBadRequest, result)
-		}
+		id := c.Param("id")
 
-		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
-			return c.JSON(http.StatusBadRequest, result)
-		}
-
-		attendance, err := a.rest.client.Attendance.Get(ctx, body.ID)
+		attendance, err := a.rest.client.Attendance.Get(ctx, id)
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
 			return c.JSON(http.StatusBadRequest, result)
@@ -166,7 +189,7 @@ func (a *restAttendance) Get(ctx context.Context) func(c echo.Context) error {
 	}
 }
 
-func (a *restAttendance) Update(ctx context.Context) func(c echo.Context) error {
+func (a *restAttendance) Out(ctx context.Context) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		result := response.ResponseData[*generated.Attendance]{}
 		body := new(struct {
@@ -179,7 +202,7 @@ func (a *restAttendance) Update(ctx context.Context) func(c echo.Context) error 
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 
@@ -199,7 +222,11 @@ func (a *restAttendance) Update(ctx context.Context) func(c echo.Context) error 
 			return c.JSON(http.StatusBadRequest, result)
 		}
 
-		attendance, err := tx.Attendance.UpdateOneID(body.ID).
+		attendance, err := tx.Attendance.Get(ctx, body.ID)
+		if err != nil {
+		}
+
+		attendance, err = tx.Attendance.UpdateOneID(body.ID).
 			SetOut(out).
 			SetUpdatedAt(time.Now()).
 			SetUpdatedBy(c.Get("user_id").(string)).
@@ -233,7 +260,7 @@ func (a *restAttendance) Delete(ctx context.Context) func(c echo.Context) error 
 		}
 
 		if err := c.Validate(body); err != nil {
-			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			result.Error = customvalidator.GetErrorsMessage(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 

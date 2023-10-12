@@ -16,7 +16,7 @@ import (
 type Employee struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty" pk`
+	ID string `json:"id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
 	// DivisionID holds the value of the "division_id" field.

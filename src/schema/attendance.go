@@ -15,7 +15,7 @@ func (Attendance) Fields() []ent.Field {
 	fields := []ent.Field{
 		field.String("user_id").NotEmpty(),
 		field.Time("in"),
-		field.Time("out"),
+		field.Time("out").Optional(),
 		field.Bool("is_present").Default(false),
 	}
 	fields = append(fields, GetBaseSchema()...)

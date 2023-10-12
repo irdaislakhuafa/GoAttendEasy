@@ -10,7 +10,7 @@ import (
 
 func GetBaseSchema() []ent.Field {
 	fields := []ent.Field{
-		field.String("id").StructTag("pk").Default(uuid.NewString()),
+		field.String("id").Default(uuid.NewString()),
 		field.Time("created_at").Optional().Default(time.Now()),
 		field.String("created_by").NotEmpty(),
 		field.Time("updated_at").Optional(),

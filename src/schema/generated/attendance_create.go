@@ -38,6 +38,14 @@ func (ac *AttendanceCreate) SetOut(t time.Time) *AttendanceCreate {
 	return ac
 }
 
+// SetNillableOut sets the "out" field if the given value is not nil.
+func (ac *AttendanceCreate) SetNillableOut(t *time.Time) *AttendanceCreate {
+	if t != nil {
+		ac.SetOut(*t)
+	}
+	return ac
+}
+
 // SetIsPresent sets the "is_present" field.
 func (ac *AttendanceCreate) SetIsPresent(b bool) *AttendanceCreate {
 	ac.mutation.SetIsPresent(b)
@@ -221,9 +229,6 @@ func (ac *AttendanceCreate) check() error {
 	}
 	if _, ok := ac.mutation.In(); !ok {
 		return &ValidationError{Name: "in", err: errors.New(`generated: missing required field "Attendance.in"`)}
-	}
-	if _, ok := ac.mutation.Out(); !ok {
-		return &ValidationError{Name: "out", err: errors.New(`generated: missing required field "Attendance.out"`)}
 	}
 	if _, ok := ac.mutation.IsPresent(); !ok {
 		return &ValidationError{Name: "is_present", err: errors.New(`generated: missing required field "Attendance.is_present"`)}
