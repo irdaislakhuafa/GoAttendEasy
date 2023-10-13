@@ -37,8 +37,7 @@ func NewAttendance(rest *Rest, ctx context.Context) AttendanceInterface {
 		rest: rest,
 	}
 
-	// TODO: use jwt middleware
-	rest.echo.POST("/api/attendances/id", attendance.In(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
+	rest.echo.POST("/api/attendances/in", attendance.In(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
 	rest.echo.GET("/api/attendances", attendance.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{}}))
 	rest.echo.GET("/api/attendances/:id", attendance.Get(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
 	rest.echo.PUT("/api/attendances/out", attendance.Out(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
