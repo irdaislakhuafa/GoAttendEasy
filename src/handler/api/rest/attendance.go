@@ -40,7 +40,7 @@ func NewAttendance(rest *Rest, ctx context.Context) AttendanceInterface {
 	rest.echo.POST("/api/attendances/in", attendance.In(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
 	rest.echo.GET("/api/attendances", attendance.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{}}))
 	rest.echo.GET("/api/attendances/:id", attendance.Get(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
-	rest.echo.PUT("/api/attendances/out", attendance.Out(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
+	rest.echo.PUT("/api/attendances/out", attendance.Out(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
 	rest.echo.DELETE("/api/attendances", attendance.Delete(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 
 	return attendance
@@ -223,6 +223,13 @@ func (a *restAttendance) Out(ctx context.Context) func(c echo.Context) error {
 
 		attendance, err := tx.Attendance.Get(ctx, body.ID)
 		if err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		}
+
+		if !attendance.Out.IsZero() {
+			result.Error = append(result.Error, map[string]string{"message": fmt.Sprintf("you already clockout today")})
+			return c.JSON(http.StatusBadRequest, result)
 		}
 
 		attendance, err = tx.Attendance.UpdateOneID(body.ID).
