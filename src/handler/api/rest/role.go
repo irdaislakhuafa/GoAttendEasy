@@ -33,7 +33,7 @@ func NewRole(rest *Rest, ctx context.Context) RoleInterface {
 	}
 
 	rest.echo.POST("/api/roles", role.Create(ctx))
-	rest.echo.GET("/api/roles", role.GetList(ctx))
+	rest.echo.GET("/api/roles", role.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	rest.echo.GET("/api/roles/:id", role.Get(ctx))
 	rest.echo.PUT("/api/roles", role.Update(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	rest.echo.DELETE("/api/roles", role.Delete(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))

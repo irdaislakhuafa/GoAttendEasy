@@ -4,11 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/irdaislakhuafa/GoAttendEasy/src/entity"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/handler/api/model/rest/response"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/middleware"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated"
+	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/role"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/schema/generated/user"
 	"github.com/irdaislakhuafa/GoAttendEasy/src/utils/customvalidator"
 	"github.com/irdaislakhuafa/go-argon2/argon2"
@@ -69,6 +72,7 @@ func (u *restUser) Update(ctx context.Context) func(c echo.Context) error {
 			Name     string `validate:"required"`
 			Email    string `validate:"required,email"`
 			Password string `validate:"required"`
+			RoleID   string `validate:"required"`
 		})
 		if err := c.Bind(body); err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
@@ -89,15 +93,31 @@ func (u *restUser) Update(ctx context.Context) func(c echo.Context) error {
 		tx, err := u.rest.client.BeginTx(ctx, &sql.TxOptions{})
 		if err != nil {
 			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			c.Logger().Error(err)
 			return c.JSON(http.StatusBadRequest, result)
 		}
 		defer tx.Rollback()
+
+		if cl, isOk := c.Get("claims").(*entity.Claims); isOk {
+			if strings.EqualFold(cl.RoleName, "employee") {
+				if cl.UserID != body.ID {
+					result.Error = append(result.Error, map[string]string{"message": "you can only change your own data!"})
+					return c.JSON(http.StatusUnauthorized, result)
+				}
+			}
+		}
+
+		if _, err := tx.Role.Query().Where(role.ID(body.RoleID)).First(ctx); err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		}
 
 		user, err := tx.User.
 			UpdateOneID(body.ID).
 			SetName(body.Name).
 			SetEmail(body.Email).
 			SetPassword(hashedPassword).
+			SetRoleID(body.RoleID).
 			SetUpdatedAt(time.Now()).
 			SetUpdatedBy(c.Get("user_id").(string)).
 			Save(ctx)

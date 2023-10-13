@@ -56,7 +56,11 @@ func main() {
 	smtp := smtp.InitGoMail(cfg.SMTP)
 
 	// initialize go cron
-	cron := gocron.NewScheduler(time.Local)
+	tz, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		panic(err)
+	}
+	cron := gocron.NewScheduler(tz)
 
 	// initilize echo
 	e := echo.New()
