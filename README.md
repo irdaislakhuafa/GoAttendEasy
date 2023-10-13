@@ -24,10 +24,6 @@ You can use Rest API usage with postman documentation below and select environme
 
 - https://www.postman.com/orange-eclipse-673431/workspace/digitels/documentation/17180185-9f803539-73da-4860-800b-82f722cc3f2b
 
-## WARNING!
-
-- The clock on the `fly.io` server may not be the same as the current clock in Indonesia. Run the project locally with `docker compose up -d` so that the clock matches your current location clock
-
 # Run App On Local
 
 If you want to run this app on local, you can use docker and docker-compose to make it more easy without any configuration needed
@@ -43,3 +39,11 @@ $ go run src/cmd/main.go -env prod
 ```
 
 user `prod` env to load config for production in local and user `local` env to load config for local app
+
+## WARNING!
+
+- The clock on the `fly.io` server may not be the same as the current clock in Indonesia. Run the project locally with `docker compose up -d` so that the clock matches your current location clock
+
+## Example ClockIn email notification with mailtrap
+
+![mailtrap](./assets/img/mailtrap.png)
