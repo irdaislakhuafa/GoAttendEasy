@@ -5,6 +5,9 @@
 		"JWT": {
 			"Secret": "xxxxxxxx",
 			"ExpiredInMinute": 10080
+		},
+		"Documentation": {
+			"Postman": "https://www.postman.com/orange-eclipse-673431/workspace/digitels/documentation/17180185-9f803539-73da-4860-800b-82f722cc3f2b"
 		}
 	},
 	"Server": {

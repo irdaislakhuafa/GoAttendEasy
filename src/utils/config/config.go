@@ -11,6 +11,9 @@ type Application struct {
 	Name            string
 	DefaultCreation string
 	JWT             JWT
+	Documentation   struct {
+		Postman string
+	}
 }
 
 type Server struct {

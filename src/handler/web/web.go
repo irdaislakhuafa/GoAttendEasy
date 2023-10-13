@@ -19,7 +19,7 @@ func Run(client *generated.Client, cfg *config.AppConfig, echo *echo.Echo) {
 		echo:   echo,
 	}
 
-	NewUserWeb(&result)
+	NewDocs(&result)
 }
 
 func (r *Web) GetEcho() *echo.Echo {
