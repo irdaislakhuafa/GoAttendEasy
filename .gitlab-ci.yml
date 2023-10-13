@@ -6,6 +6,7 @@ test:
   stage: test
   image: golang:latest
   script:
+    - cd GoAttendEasy
     - go test -v ./.. 
   only:
     - master
