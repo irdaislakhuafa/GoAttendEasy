@@ -1,0 +1,1018 @@
+{
+	"info": {
+		"_postman_id": "9f803539-73da-4860-800b-82f722cc3f2b",
+		"name": "GoAttendEasy",
+		"description": "The GoAttendEasy application is an attendance application created using the Go programming language (Golang) with two main features: \"Clock In Reminder\" (reminder of coming in time) and \"Clock Out Reminder\" (reminder of going home time). This application is intended to assist users in recording the attendance of employees or team members, with a reminder feature via email sent 30 minutes before the schedule to ensure that everyone follows their work schedule correctly.\n\nThis is the usage documentation for the Rest API of the \\`GoAttendEasy\\` application.\n\nEntity design :\n\n- [https://dbdiagram.io/d/GoAttendEasy-62500b892514c97903f5e23d](https://dbdiagram.io/d/GoAttendEasy-62500b892514c97903f5e23d)\n    \n\nRest API Base URL :\n\n- [https://go-attend-easy.fly.dev](https://go-attend-easy.fly.dev)\n    \n\nNOTE:\n\n- If the email notification is not visible in your inbox, please look for it in the `spam` folder\n- Use `PreTest - PROD` environment to using deployed app\n- One `user` only have one `role`\n- One `user` with role \"employee\" can have many `division`\n- One `user` can have many attendance (in different day)\n- Each clockin and clockout reminder configuration is read at night at 00:00 so it may take 24 hours to apply new reminders or changed reminder data.\n- Only user with role `employee` will get email notification\n- JWT Token expired after one week\n- Reminder email notification will send if data on table `reminder` is exists and day is match\n    \n\nWARNING:\n\n- The clock on the fly.io server may not be the same as the current clock in Indonesia. Run the project locally with `docker compose up -d` so that the clock matches your current location clock",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17180185",
+		"_collection_link": "https://www.postman.com/orange-eclipse-673431/workspace/digitels/collection/17180185-9f803539-73da-4860-800b-82f722cc3f2b?action=share&creator=17180185&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "jwt",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/users",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": "Endpoint to get list data of users, only user with role `admin` can access this endpoint. Apart from `admin`, currently there are no other roles that are allowed to view all user data.\n\nThis endpoint has an optional request body named `IsDeleted` to retrieve only user data that has not been deleted with `false` as default value is request body is empty."
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/users/889fc4ec-c990-4119-8a3f-cad726e4d3c2",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"889fc4ec-c990-4119-8a3f-cad726e4d3c2"
+									]
+								},
+								"description": "Endpoint to get user by `user id`. Allowed user role is `admin` and `employee`"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"d0a7da36-2fcd-459a-bffd-dfb7132b418c\",\n    \"Name\": \"irda islakhu afa\",\n    \"Email\": \"irdhaislakhuafa@gmail.com\",\n    \"Password\": \"irdaislakhuafa\",\n    \"RoleID\": \"e4aaa52d-a624-463f-99b3-87511e5173f8\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/users",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": "used to update data user, field `ID` is mandatory for update user, allowed roles is `admin` and `employee` but user with role `employee` can only change their own data, not other users' data. if user role is `admin` he can change any data"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"dd832d5d-fe2d-46a1-a457-ce92a0491b7b\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/users",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								},
+								"description": "used to delete user by id, this implement soft deleted. allowed role to use this resource is `admin`"
+							},
+							"response": []
+						}
+					],
+					"description": "A collection of endpoints for CRUD user data with some endpoint provided"
+				},
+				{
+					"name": "role",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Name\": \"employee\",\n    \"Description\": \"this is employee\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/roles",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								},
+								"description": "Endpoint to create new role, all user can create new role without authentication"
+							},
+							"response": []
+						},
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/roles",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								},
+								"description": "Endpoint to get list of roles, only user with role `admin` can access this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/roles/3d524e5c-e348-4391-a743-de064d257219",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"roles",
+										"3d524e5c-e348-4391-a743-de064d257219"
+									]
+								},
+								"description": "endpoint to get role by `role id`, any user can use this resource without authentication"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmE0NDE5NTUtODg0Ni00NWU2LTk4ZGMtNTNhNTViY2M5MDE0Iiwicm9sZV9uYW1lIjoiYWRtaW4iLCJleHAiOjE2OTc2ODY0ODkuMDg2MjIzMSwiaWF0IjoxNjk3MDgxNjg5LjA4NjIyMzF9.Eos2zb5Nn5Y48Eiktx5A18yHRxL4Tsd62h84lspbglQ",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"e54c28ee-7a8c-463b-8f25-9461e6291eb0\",\n    \"Name\": \"admin\",\n    \"Description\": \"This is admin\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/roles",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								},
+								"description": "endpoint to update role by `role id`, only user with role `admin` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmE0NDE5NTUtODg0Ni00NWU2LTk4ZGMtNTNhNTViY2M5MDE0Iiwicm9sZV9uYW1lIjoiYWRtaW4iLCJleHAiOjE2OTc2ODY0ODkuMDg2MjIzMSwiaWF0IjoxNjk3MDgxNjg5LjA4NjIyMzF9.Eos2zb5Nn5Y48Eiktx5A18yHRxL4Tsd62h84lspbglQ",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"3d524e5c-e348-4391-a743-de064d257219\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/roles",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								},
+								"description": "endpoint to delete role by `role id`, only user with role `admin` can use this"
+							},
+							"response": []
+						}
+					],
+					"description": "Role endpoints collections for user, officialy suppoerted role `admin` and `employee`"
+				},
+				{
+					"name": "auth",
+					"item": [
+						{
+							"name": "register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"admin\",\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"admin\",\n    \"role_id\": \"a278d9bc-43b2-4573-9f56-f8800ffd18e9\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/auth/register",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								},
+								"description": "endpoint to register new user, anyone can use this resource without authentication and authorization"
+							},
+							"response": []
+						},
+						{
+							"name": "login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"admin\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/auth/login",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								},
+								"description": "all registered user with any role can access this endpoint, the result of this endpoint is `jwt token` can be used to access resource for some endpoints api"
+							},
+							"response": []
+						}
+					],
+					"description": "rest api endpoint collections for authentication and authorization user"
+				},
+				{
+					"name": "reminder",
+					"item": [
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/reminders",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"reminders"
+									]
+								},
+								"description": "endpoint to get list reminder with `IsDeleted` filter as optional parameter. all user with any role can access this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/reminders/94ab89d1-7650-4993-a76b-84eb1a70b0ce",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"reminders",
+										"94ab89d1-7650-4993-a76b-84eb1a70b0ce"
+									]
+								},
+								"description": "all user with any role can access this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IN\": \"08:00:00\",\n    \"OUT\": \"16:00:00\",\n    \"Day\": 7\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/reminders",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"reminders"
+									]
+								},
+								"description": "endpoint to create new reminder with parameter `IN` for clockin and `OUT` for clockout and `Day` is day of week with 1 is Sunday (1-7). only user with role `admin` can access this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"8b482181-6f74-4636-a23f-00f497c34a90\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/reminders",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"reminders"
+									]
+								},
+								"description": "endpoint to delete data `reminder` by id. only user with role admin can access this"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"3a38796c-cee1-4304-846f-9a2ace029792\",\n    \"IN\": \"03:29:00\",\n    \"OUT\": \"16:00:00\",\n    \"Day\": 7\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/reminders",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"reminders"
+									]
+								},
+								"description": "endpoint to update data `reminder` by `reminder id`, only user with role `admin` can access this"
+							},
+							"response": []
+						}
+					],
+					"description": "collections endpoint for CRUD data `reminder` , data `remider` used to send notification clockin and clockout by email for each employee, but currently has a 1 day lag to apply newly created or changed reminder configurations in sending email notifications. `reminder` data will be loaded at 00:00 hour"
+				},
+				{
+					"name": "employee",
+					"item": [
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/employees",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"employees"
+									]
+								},
+								"description": "endpoint to get list of all employee, only user with role `admin` can access this"
+							},
+							"response": []
+						},
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"UserID\": \"61380937-36c1-4280-a6b8-2355b16604a0\",\n    \"DivisionID\": \"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/employees",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"employees"
+									]
+								},
+								"description": "endpoint to create new employee, only user with role `admin` can use this resource\n\nNOTE :\n\n- register user first before create `employee`\n- there must be at least 1 `division` data that has been created"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"cf9f3a0f-ffe5-49b0-97cb-a1a5a3271556\",\n    \"UserID\": \"61380937-36c1-4280-a6b8-2355b16604a0\",\n    \"DivisionID\": \"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/employees",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"employees"
+									]
+								},
+								"description": "endpoint to update employee data, only user with role `admin` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"03d914c6-c06a-4d85-9792-ad24742caf81\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/employees",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"employees"
+									]
+								},
+								"description": "endpoint to update delete data, only user with role `admin` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"UserID\": \"61380937-36c1-4280-a6b8-2355b16604a0\",\n    \"DivisionID\": \"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/employees/cf9f3a0f-ffe5-49b0-97cb-a1a5a3271556",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"employees",
+										"cf9f3a0f-ffe5-49b0-97cb-a1a5a3271556"
+									]
+								},
+								"description": "endpoint to get employee data by `employee id`, all registered user can use this resource"
+							},
+							"response": []
+						}
+					],
+					"description": "collections for CRUD data employee\n\nNOTE:\n\n- `employee` table only an intermediate table between the `user` and the `division`"
+				},
+				{
+					"name": "division",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Name\": \"Daemon\",\n    \"Description\": \"Just a daemon :v\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/divisions",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"divisions"
+									]
+								},
+								"description": "endpoint to create new `division`, only user with role `admin` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/divisions",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"divisions"
+									]
+								},
+								"description": "endpoint to get list all data `division`, all registered user can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/divisions/289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"divisions",
+										"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1"
+									]
+								},
+								"description": "endpoint to get data `division` by `division id`, all registered user can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1\",\n    \"Name\": \"Daemon King\",\n    \"Description\": \"Just a king of daemon :v\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/divisions",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"divisions"
+									]
+								},
+								"description": "endpoint to update data `division`, only user with role `admin` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"289a4bcc-1fc4-4db8-8ecb-a021b4f7cdd1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/divisions",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"divisions"
+									]
+								},
+								"description": "endpoint to delete data `division`, only user with role `admin` can use this resource"
+							},
+							"response": []
+						}
+					],
+					"description": "collections for CRUD division"
+				},
+				{
+					"name": "attendance",
+					"item": [
+						{
+							"name": "in",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"UserID\": \"61380937-36c1-4280-a6b8-2355b16604a0\",\n    \"IN\": \"08:30:00\",\n    \"IsPresent\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/attendances/in",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"attendances",
+										"in"
+									]
+								},
+								"description": "endpoint to clockin attendance, only user with role `admin` and `employee` can use this resource\n\nNOTE :\n\n- Employees can only clockin once a day"
+							},
+							"response": []
+						},
+						{
+							"name": "out",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"ID\": \"1a671886-f743-429d-b592-68229d09933b\",\n   \"OUT\": \"16:00:00\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/attendances/out",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"attendances",
+										"out"
+									]
+								},
+								"description": "endpoint to clockout attendance\n\nNOTE :\n\n- Employees can only clockout once a day"
+							},
+							"response": []
+						},
+						{
+							"name": "get list",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/attendances",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"attendances"
+									]
+								},
+								"description": "endpoint to get list attendance, if user role is `admin` will get all data attendance, if the user role is `employee` he can only see his own attendance data for the current day"
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"IsDeleted\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/attendances/b0e2d4a9-9c31-44b7-87fa-74cfa4859ed0",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"attendances",
+										"b0e2d4a9-9c31-44b7-87fa-74cfa4859ed0"
+									]
+								},
+								"description": "endpoint to get `attendance` by `attendance id`, only user with role `admin` and `employee` can use this resource"
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"ID\": \"aa05541e-a20f-4188-afb2-70047fc7f8bd\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rest_url}}/api/attendances",
+									"host": [
+										"{{rest_url}}"
+									],
+									"path": [
+										"api",
+										"attendances"
+									]
+								},
+								"description": "endpoint to delete attendance, only user with role `admin` can use this resource"
+							},
+							"response": []
+						}
+					],
+					"description": "endpoint collection for CRUD attendance data"
+				}
+			],
+			"description": "Regular folder with jwt token in `authorization` header, the jwt token string must start with `Bearer`\n\nExample Token\n\n``` bash\neyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiY2Q0ZTc0YmItN2FlMy00MDczLWFlMTctYmNjNmY2NmQxYzI5Iiwicm9sZV9uYW1lIjoiYWRtaW4iLCJleHAiOjE2OTc3MjgzOTAuNjMyNzcyMiwiaWF0IjoxNjk3MTIzNTkwLjYzMjc3MzJ9.QTMkVlCYoD4Udu0NJwCaci57tgxVUd5W6-vXXlNjLII\n\n```\n\nExample Payload Token\n\n``` json\n{\n  \"user_id\": \"cd4e74bb-7ae3-4073-ae17-bcc6f66d1c29\",\n  \"role_name\": \"admin\",\n  \"exp\": 1697728390.6327722,\n  \"iat\": 1697123590.6327732\n}\n\n```",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiODg5ZmM0ZWMtYzk5MC00MTE5LThhM2YtY2FkNzI2ZTRkM2MyIiwicm9sZV9uYW1lIjoiYWRtaW4iLCJleHAiOjE2OTc3ODcyMzUuMjg0NTY3LCJpYXQiOjE2OTcxODI0MzUuMjg0NTY4fQ.ctFy8x-2oCnm2Il1NNE0n6Roft9cdt7a78Aj3CdvBtQ",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
