@@ -36,7 +36,7 @@ func NewEmployee(rest *Rest, ctx context.Context) EmployeeInterface {
 	rest.echo.POST("/api/employees", employee.Create(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	rest.echo.GET("/api/employees", employee.GetList(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	rest.echo.GET("/api/employees/:id", employee.Get(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{}))
-	rest.echo.PUT("/api/employees", employee.Update(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin", "employee"}}))
+	rest.echo.PUT("/api/employees", employee.Update(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	rest.echo.DELETE("/api/employees", employee.Delete(ctx), middleware.JWT(rest.cfg, middleware.JWTMiddlewareOption{RoleNames: []string{"admin"}}))
 	return employee
 }
@@ -164,6 +164,11 @@ func (e *restEmployee) Update(ctx context.Context) func(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, result)
 		}
 		defer tx.Rollback()
+
+		if _, err := tx.User.Get(ctx, body.UserID); err != nil {
+			result.Error = append(result.Error, map[string]string{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, result)
+		}
 
 		employee, err := tx.Employee.UpdateOneID(body.ID).
 			SetUserID(body.UserID).
