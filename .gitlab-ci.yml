@@ -17,6 +17,5 @@ deploy:
   only:
     - master
   script:
-    - ls
     - flyctl auth login -t "$FLY_TOKEN"
     - flyctl deploy --now --app "go-attend-easy"
