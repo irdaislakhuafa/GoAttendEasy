@@ -47,9 +47,9 @@ func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
 	r.scheduller.cron.Every(1).Day().At("00:00:00").Do(func() {
 		log.Println("set notification for clock in and out from reminder configuration")
 		now := time.Now()
-		weekDay := (now.Weekday() + 1)
+		weekDay := (int(now.Weekday()) + 1)
 
-		reminder, err := r.scheduller.client.Reminder.Query().Where(reminder.Day(int(weekDay)), reminder.IsDeleted(false)).First(ctx)
+		reminder, err := r.scheduller.client.Reminder.Query().Where(reminder.Day(weekDay), reminder.IsDeleted(false)).First(ctx)
 		if err != nil {
 			log.Printf("clockin reminder at %v not found, %v\n", r.day[int8(weekDay)], err)
 			r.reminder = nil
