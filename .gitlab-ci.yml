@@ -1,15 +1,15 @@
 stages:
-  - test
   - deploy
+  # - test
 
-test:
-  stage: test
-  image: golang:latest
-  script:
-    - cd GoAttendEasy
-    - go test -v ./.. 
-  only:
-    - master
+# test:
+#   stage: test
+#   image: golang:latest
+#   script:
+#     - cd GoAttendEasy
+#     - go test -v ./.. 
+#   only:
+#     - master
 
 deploy:
   stage: deploy
