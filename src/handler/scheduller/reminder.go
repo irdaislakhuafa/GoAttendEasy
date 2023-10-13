@@ -43,6 +43,7 @@ func NewReminder(scheduller *Scheduller, ctx context.Context) ReminderInterface 
 }
 
 func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
+	// will read config from reminders for scheduller today
 	r.scheduller.cron.Every(1).Day().At("00:00:00").Do(func() {
 		log.Println("set notification for clock in and out from reminder configuration")
 		now := time.Now()
@@ -71,7 +72,7 @@ func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
 
 		// clock in reminder
 		if !reminder.In.IsZero() {
-			scheduller.Every(1).Day().At(reminder.In.Format("15:04:05")).Do(func() {
+			scheduller.Every(1).Day().At(reminder.In.Add(-(time.Minute * 30)).Format("15:04:05")).Do(func() {
 				listMsg := []*mail.Message{}
 				for _, u := range listUser {
 					msg := mail.NewMessage(func(m *mail.Message) {
@@ -95,7 +96,7 @@ func (r *schedullerReminder) ClockInOutReminder(ctx context.Context) {
 
 		// clock out reminder
 		if !reminder.Out.IsZero() {
-			scheduller.Every(1).Day().At(reminder.Out.Format("15:04:05")).Do(func() {
+			scheduller.Every(1).Day().At(reminder.Out.Add(-(time.Minute * 30)).Format("15:04:05")).Do(func() {
 				listMsg := []*mail.Message{}
 				for _, u := range listUser {
 					msg := mail.NewMessage(func(m *mail.Message) {

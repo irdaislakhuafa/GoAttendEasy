@@ -18,5 +18,16 @@
 		"Host": "b8xjwznrk0inhabkcnzz-postgresql.services.clever-cloud.com",
 		"Port": 5432,
 		"SSL": false
+	},
+	"SMTP": {
+		"Host": "smtp-relay.brevo.com",
+		"Username": "irdhaislakhuafa@gmail.com",
+		"Password": "qKWAHgzPbNtGkDfQ",
+		"Port": 587,
+		"Information": {
+			"Senders": [
+				"irdhaislakhuafa@gmail.com"
+			]
+		}
 	}
 }

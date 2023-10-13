@@ -1,4 +1,3 @@
-# TODO: fix this
 stages:
   - test
   - deploy
@@ -7,6 +6,7 @@ test:
   stage: test
   image: golang:latest
   script:
+    - cd GoAttendEasy
     - go test -v ./.. 
   only:
     - master

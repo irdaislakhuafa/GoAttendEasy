@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for go-attend-easy on 2023-10-12T12:53:02+07:00
+# fly.toml app configuration file generated for go-attend-easy on 2023-10-13T12:50:54+07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -8,6 +8,9 @@ primary_region = "sin"
 
 [build]
   dockerfile = "Dockerfile"
+
+[env]
+  TZ = "Asia/Jakarta"
 
 [http_service]
   internal_port = 8080
