@@ -6,7 +6,7 @@ GoAttendEasy is an application to make attendance management easier with a serie
 
 Below is database schema for this app
 
-- [schema](https://dbdiagram.io/d/Crino-62500b892514c97903f5e23d)
+- [schema](https://dbdiagram.io/d/GoAttendEasy-62500b892514c97903f5e23d)
 
 # The Technology Stack Or Library Used In Developing This application
 
