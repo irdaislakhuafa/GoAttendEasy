@@ -10,5 +10,4 @@ deploy:
     - echo "installing flyctl"
     - apk update && apk add curl
     - curl -L https://fly.io/install.sh | sh | grep 'export' > $HOME/.ashrc && source $HOME/.ashrc && ls
-    - flyctl auth login -t "$FLY_TOKEN"
-    - flyctl deploy --now --app "go-attend-easy" --remote-only
+    - flyctl deploy --now --remote-only
