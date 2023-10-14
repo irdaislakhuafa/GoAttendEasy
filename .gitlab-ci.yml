@@ -3,9 +3,11 @@ stages:
 
 deploy:
   stage: deploy
-  image: flyio/flyctl:latest
+  image: alpine:latest
   only:
     - master
   script:
+    - echo "installing flyctl"
+    - curl -L https://fly.io/install.sh | sh | grep 'export' > $HOME/.ashrc && source $HOME/.ashrc && ls
     - flyctl auth login -t "$FLY_TOKEN"
     - flyctl deploy --now --app "go-attend-easy"
