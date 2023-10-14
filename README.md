@@ -23,6 +23,7 @@ This application is a Rest API type with a URL prefix which has been published o
 You can use Rest API usage with postman documentation below and select environment `PreTest - PROD`
 
 - https://www.postman.com/orange-eclipse-673431/workspace/digitels/documentation/17180185-9f803539-73da-4860-800b-82f722cc3f2b
+  Or you can import postman collection from `docs/postman/GoAttendEasy.postman_collection.json`
 
 # Run App On Local
 
